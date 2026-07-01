@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>roen — CS @ NTU</title>
+<meta name="description" content="Roen, computer science student at NTU. Building small useful things, heading toward data science.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <a href="#top" class="logo">roen<span class="cursor-static">_</span></a>
+  <nav class="topnav">
+    <a href="#about">./about</a>
+    <a href="#projects">./projects</a>
+    <a href="#contact">./contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <p class="prompt-line">
+        <span class="prompt-user">roen@ntu</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-sep">$</span>
+        <span id="typed"></span><span class="cursor" aria-hidden="true">▌</span>
+      </p>
+      <h1 class="hero-name">Roen</h1>
+      <p class="hero-tagline">Computer science student at NTU. I build small, useful things and I'm working toward data science.</p>
+      <div class="hero-links">
+        <a href="#projects" class="btn btn-primary">see the work</a>
+        <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="btn btn-ghost">github ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="section-head">
+      <span class="tag">01</span>
+      <h2>about</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a computer science student at Nanyang Technological University. Most of my coursework covers object oriented programming, data structures and algorithms, computer architecture, and statistics, but the stuff I actually care about happens outside the syllabus.</p>
+        <p>I'd rather ship a working app than collect another certificate. I like projects I can point to and explain in plain terms, no jargon needed. Right now that means campus tools, trackers, and small fintech experiments. Longer term I'm aiming at data science, where the same instinct applies: turn messy information into something a person can actually use.</p>
+      </div>
+      <div class="about-stack">
+        <p class="stack-label">// currently working with</p>
+        <div class="stack-tags">
+          <span class="stack-tag">--java</span>
+          <span class="stack-tag">--python</span>
+          <span class="stack-tag">--react-native</span>
+          <span class="stack-tag">--sql</span>
+          <span class="stack-tag">--typescript</span>
+          <span class="stack-tag">--node</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects" id="projects">
+    <div class="section-head">
+      <span class="tag">02</span>
+      <h2>projects</h2>
+    </div>
+
+    <div class="project-list">
+
+      <article class="project-card" data-expanded="false">
+        <div class="project-main">
+          <div class="project-info">
+            <h3>SummerBuild</h3>
+            <p class="project-desc">A React Native app that helps NTU students find and join pickup sports games on campus. Built with Expo, with a full light and dark theming system running through the whole app.</p>
+            <div class="project-tags">
+              <span>react native</span>
+              <span>expo</span>
+              <span>typescript</span>
+            </div>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/tensixn/SummerBuild" target="_blank" rel="noopener">source ↗</a>
+            <button class="expand-btn" type="button" aria-expanded="false">cat readme.md &gt;</button>
+          </div>
+        </div>
+        <div class="project-more">
+          <p>Started this because finding a pickup game on campus usually meant scrolling through a messy group chat. SummerBuild gives it a proper interface instead: browse open games, see who's in, join with one tap.</p>
+          <p>Most recently I built out a complete dark mode system, a ThemeContext with light and dark palettes wired through a useTheme() hook, applied inline across the whole codebase rather than bolted on after.</p>
+        </div>
+      </article>
+
+      <article class="project-card project-card--empty">
+        <div class="project-main">
+          <div class="project-info">
+            <h3>more coming</h3>
+            <p class="project-desc">This spot is reserved. Next up: something fintech, something data.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="section-head">
+      <span class="tag">03</span>
+      <h2>contact</h2>
+    </div>
+    <div class="contact-body">
+      <p>Want to build something, or just talk through an idea? Reach out.</p>
+      <div class="contact-links">
+        <a href="mailto:your.email@example.com" class="contact-line">
+          <span class="contact-cmd">mail -s "hey"</span>
+          <span class="contact-val">your.email@example.com</span>
+        </a>
+        <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="contact-line">
+          <span class="contact-cmd">open</span>
+          <span class="contact-val">github.com/tensixn</span>
+        </a>
+        <a href="#" class="contact-line">
+          <span class="contact-cmd">open</span>
+          <span class="contact-val">linkedin.com/in/your-handle</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>built by roen · plain html, css, js · <span id="year"></span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
