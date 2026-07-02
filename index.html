@@ -14,14 +14,49 @@
 
 <div class="grain"></div>
 
+<!-- custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- intro loader -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <p class="loader-path">~/</p>
+    <button class="loader-skip" id="skipBtn" type="button">skip →</button>
+  </div>
+</div>
+
 <header class="topbar">
   <a href="#top" class="logo">roen<span class="cursor-static">_</span></a>
   <nav class="topnav">
-    <a href="#about">./about</a>
-    <a href="#projects">./projects</a>
-    <a href="#contact">./contact</a>
+    <a href="#about">about</a>
+    <a href="#projects">projects</a>
+    <a href="#contact">contact</a>
+    <a href="playground.html">playground</a>
   </nav>
+  <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
+    <span></span><span></span>
+  </button>
 </header>
+
+<!-- mobile nav overlay -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="menu-close" id="menuClose" aria-label="close menu">✕</button>
+  <nav>
+    <a href="#about">about</a>
+    <a href="#projects">projects</a>
+    <a href="#contact">contact</a>
+    <a href="playground.html">playground</a>
+  </nav>
+</div>
+
+<!-- scroll progress dots -->
+<nav class="scroll-dots" aria-hidden="true">
+  <a href="#top" class="dot" data-section="top"></a>
+  <a href="#about" class="dot" data-section="about"></a>
+  <a href="#projects" class="dot" data-section="projects"></a>
+  <a href="#contact" class="dot" data-section="contact"></a>
+</nav>
 
 <main>
 
@@ -29,28 +64,56 @@
     <div class="hero-inner">
       <p class="prompt-line">
         <span class="prompt-user">roen@ntu</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-sep">$</span>
-        <span id="typed"></span><span class="cursor" aria-hidden="true">▌</span>
+        <span id="typedWhoami"></span><span class="cursor-blink" aria-hidden="true">▌</span>
       </p>
-      <h1 class="hero-name">Roen</h1>
-      <p class="hero-tagline">Computer science student at NTU. I build small, useful things and I'm working toward data science.</p>
+      <h1 class="hero-name">hello, i'm roen</h1>
+      <p class="hero-role">i'm a <span class="role-word" id="roleWord">cs student</span></p>
+      <p class="hero-tagline">I build small, useful things at NTU and I'm working toward data science.</p>
       <div class="hero-links">
         <a href="#projects" class="btn btn-primary">see the work</a>
         <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="btn btn-ghost">github ↗</a>
       </div>
     </div>
+    <a href="#about" class="scroll-cue">
+      <span>scroll</span>
+      <span class="scroll-line"></span>
+    </a>
   </section>
 
-  <section class="about" id="about">
+  <section class="about reveal" id="about">
     <div class="section-head">
       <span class="tag">01</span>
       <h2>about</h2>
     </div>
     <div class="about-grid">
       <div class="about-text">
+        <h3 class="about-sub">background</h3>
         <p>I'm a computer science student at Nanyang Technological University. Most of my coursework covers object oriented programming, data structures and algorithms, computer architecture, and statistics, but the stuff I actually care about happens outside the syllabus.</p>
-        <p>I'd rather ship a working app than collect another certificate. I like projects I can point to and explain in plain terms, no jargon needed. Right now that means campus tools, trackers, and small fintech experiments. Longer term I'm aiming at data science, where the same instinct applies: turn messy information into something a person can actually use.</p>
+        <p>I'd rather ship a working app than collect another certificate. I like projects I can point to and explain in plain terms, no jargon needed. Right now that means campus tools, trackers, and small fintech experiments.</p>
+
+        <h3 class="about-sub">looking ahead</h3>
+        <p>I'm aiming at data science, where the same instinct applies. Turn messy information into something a person can actually use. I'm also into fintech and investing, so a lot of my side projects end up somewhere between a trading tool and a data problem.</p>
+        <p>Outside of code I play games to unwind, Slay the Spire 2 has been eating a lot of my free time lately. Good deckbuilders scratch the same itch as good code, everything has to fit together.</p>
       </div>
-      <div class="about-stack">
+
+      <aside class="status-card">
+        <p class="status-label">current status</p>
+        <div class="status-row">
+          <span class="status-key">status</span>
+          <span class="status-val"><span class="status-dot"></span>building</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">role</span>
+          <span class="status-val">CS Undergrad</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">place</span>
+          <span class="status-val">Nanyang Technological University</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">open to</span>
+          <span class="status-val">internships · collab projects</span>
+        </div>
         <p class="stack-label">// currently working with</p>
         <div class="stack-tags">
           <span class="stack-tag">--java</span>
@@ -58,13 +121,12 @@
           <span class="stack-tag">--react-native</span>
           <span class="stack-tag">--sql</span>
           <span class="stack-tag">--typescript</span>
-          <span class="stack-tag">--node</span>
         </div>
-      </div>
+      </aside>
     </div>
   </section>
 
-  <section class="projects" id="projects">
+  <section class="projects reveal" id="projects">
     <div class="section-head">
       <span class="tag">02</span>
       <h2>projects</h2>
@@ -73,24 +135,48 @@
     <div class="project-list">
 
       <article class="project-card" data-expanded="false">
+        <div class="project-top">
+          <span class="project-date">2026</span>
+          <a href="https://github.com/tensixn/Roen-s-Website" target="_blank" rel="noopener" class="project-github">GitHub ↗</a>
+        </div>
+        <div class="project-main">
+          <div class="project-info">
+            <h3>Roen's Website</h3>
+            <p class="project-desc">This site. Built to introduce myself, show what I've been working on, and give people a real place to find my projects instead of a scattered GitHub profile.</p>
+            <div class="project-tags">
+              <span>html</span>
+              <span>css</span>
+              <span>js</span>
+            </div>
+          </div>
+          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+        </div>
+        <div class="project-more">
+          <p>I wanted something that looked and felt like the tools I actually use every day, a terminal, a dark editor theme, monospace type, rather than a generic template. Built it in plain HTML, CSS, and JS on purpose, no framework overhead for something this size.</p>
+          <p>Still adding to it as I build more. The playground page is where I'm testing small handwritten JS ideas outside of the main site.</p>
+        </div>
+      </article>
+
+      <article class="project-card" data-expanded="false">
+        <div class="project-top">
+          <span class="project-date">2026 · NTU SummerBuild</span>
+          <a href="https://github.com/tensixn/SummerBuild" target="_blank" rel="noopener" class="project-github">GitHub ↗</a>
+        </div>
         <div class="project-main">
           <div class="project-info">
             <h3>SummerBuild</h3>
-            <p class="project-desc">A React Native app that helps NTU students find and join pickup sports games on campus. Built with Expo, with a full light and dark theming system running through the whole app.</p>
+            <p class="project-desc">A React Native app that helps NTU students find, host, and join pickup sports games on campus in seconds. Built with Expo, with a full light and dark theming system running through the whole app.</p>
             <div class="project-tags">
               <span>react native</span>
               <span>expo</span>
               <span>typescript</span>
             </div>
           </div>
-          <div class="project-links">
-            <a href="https://github.com/tensixn/SummerBuild" target="_blank" rel="noopener">source ↗</a>
-            <button class="expand-btn" type="button" aria-expanded="false">cat readme.md &gt;</button>
-          </div>
+          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
         </div>
         <div class="project-more">
-          <p>Started this because finding a pickup game on campus usually meant scrolling through a messy group chat. SummerBuild gives it a proper interface instead: browse open games, see who's in, join with one tap.</p>
-          <p>Most recently I built out a complete dark mode system, a ThemeContext with light and dark palettes wired through a useTheme() hook, applied inline across the whole codebase rather than bolted on after.</p>
+          <p>Started this because finding a pickup game on campus usually meant scrolling through a messy group chat. SummerBuild gives it a proper interface instead, browse open games, see who's in, join with one tap.</p>
+          <p>Most recently I built out a complete dark mode system, a ThemeContext with light and dark palettes wired through a useTheme() hook, applied across the whole codebase rather than bolted on after. Built as part of a team for NTU SummerBuild 2026.</p>
         </div>
       </article>
 
@@ -106,13 +192,15 @@
     </div>
   </section>
 
-  <section class="contact" id="contact">
+  <section class="contact reveal" id="contact">
     <div class="section-head">
       <span class="tag">03</span>
       <h2>contact</h2>
     </div>
     <div class="contact-body">
-      <p>Want to build something, or just talk through an idea? Reach out.</p>
+      <p class="contact-intro">Open to internships, collab projects, and just talking through an idea. I usually respond within a day.</p>
+      <a href="mailto:your.email@example.com?subject=hey%20roen" class="btn btn-primary contact-cta">send message →</a>
+
       <div class="contact-links">
         <a href="mailto:your.email@example.com" class="contact-line">
           <span class="contact-cmd">mail -s "hey"</span>
@@ -133,7 +221,7 @@
 </main>
 
 <footer class="site-footer">
-  <p>built by roen · plain html, css, js · <span id="year"></span></p>
+  <p>// roen · <span id="year"></span> //</p>
 </footer>
 
 <script src="script.js"></script>

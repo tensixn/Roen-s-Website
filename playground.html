@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>playground — roen</title>
+<meta name="description" content="A small handwritten terminal to poke around in. Try 'help'.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<header class="topbar">
+  <a href="index.html" class="logo">roen<span class="cursor-static">_</span></a>
+  <nav class="topnav">
+    <a href="index.html#about">about</a>
+    <a href="index.html#projects">projects</a>
+    <a href="index.html#contact">contact</a>
+    <a href="playground.html" class="is-current">playground</a>
+  </nav>
+</header>
+
+<main class="playground-main">
+  <a href="index.html" class="playground-back">← back to site</a>
+
+  <div class="playground-head">
+    <h1>playground</h1>
+    <p>A small handwritten terminal, no framework, just JS. Type a command and see what happens. Type <span style="color: var(--accent)">help</span> to get started.</p>
+  </div>
+
+  <div class="terminal-wrap" id="terminalWrap">
+    <div class="terminal-bar">
+      <span class="terminal-dot"></span>
+      <span class="terminal-dot"></span>
+      <span class="terminal-dot"></span>
+      <span class="terminal-title">roen@ntu: ~/playground</span>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+      <div class="terminal-output" id="terminalOutput">
+        <p>type <span class="out-accent">help</span> to see what this thing can do.</p>
+      </div>
+      <div class="terminal-input-row">
+        <span class="terminal-prompt">roen@ntu:~/playground$</span>
+        <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal input">
+      </div>
+    </div>
+  </div>
+
+  <p class="terminal-hint">try: <span>help</span> · <span>whoami</span> · <span>projects</span> · <span>spire</span> · <span>sudo</span></p>
+</main>
+
+<footer class="site-footer">
+  <p>// roen · <span id="year"></span> //</p>
+</footer>
+
+<script src="script.js"></script>
+<script src="playground.js"></script>
+</body>
+</html>
