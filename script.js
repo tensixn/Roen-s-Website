@@ -23,35 +23,6 @@ if (loader) {
   }
 }
 
-/* ---------------- custom cursor ---------------- */
-if (isFinePointer && !prefersReducedMotion) {
-  const dot = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  let ringX = 0, ringY = 0, targetX = 0, targetY = 0;
-
-  window.addEventListener('mousemove', (e) => {
-    targetX = e.clientX;
-    targetY = e.clientY;
-    dot.style.transform = `translate(${targetX}px, ${targetY}px) translate(-50%, -50%)`;
-  });
-
-  function animateRing() {
-    ringX += (targetX - ringX) * 0.18;
-    ringY += (targetY - ringY) * 0.18;
-    ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
-
-  const hoverTargets = 'a, button, .project-card';
-  document.addEventListener('mouseover', (e) => {
-    if (e.target.closest(hoverTargets)) ring.classList.add('is-active');
-  });
-  document.addEventListener('mouseout', (e) => {
-    if (e.target.closest(hoverTargets)) ring.classList.remove('is-active');
-  });
-}
-
 /* ---------------- mobile nav ---------------- */
 const menuToggle = document.getElementById('menuToggle');
 const menuClose = document.getElementById('menuClose');
