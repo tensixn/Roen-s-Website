@@ -46,11 +46,11 @@ a { color: inherit; text-decoration: none; }
 /* ---------- custom cursor ---------- */
 @media (pointer: fine) {
   body {
-    cursor: url('cursor-assets/cursor-default.png') 10 6, auto;
+    cursor: url('cursor-default.png') 10 6, auto;
   }
 
   a, button, .project-card, .expand-btn {
-    cursor: url('cursor-assets/cursor-pointer.png') 20 8, pointer;
+    cursor: url('cursor-pointer.png') 20 8, pointer;
   }
 }
 
