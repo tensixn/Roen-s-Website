@@ -51,7 +51,46 @@
   </div>
 
   <p class="terminal-hint">try: <span>help</span> · <span>whoami</span> · <span>projects</span> · <span>spire</span> · <span>sudo</span></p>
+
+  <div class="bubble-section">
+    <div class="section-head">
+      <span class="tag">02</span>
+      <h2>bubble wand</h2>
+    </div>
+    <p class="bubble-intro">A cursor that blows bubbles. Move around, scroll, click things, your liquid runs out eventually, dip the wand in the pool to refill. Pop 1000 and something happens.</p>
+    <button class="btn btn-primary" id="bubbleToggle" type="button">🫧 activate bubble wand</button>
+  </div>
 </main>
+
+<!-- bubble wand UI, hidden until activated -->
+<div class="bubble-wand" id="bubbleWand" aria-hidden="true">
+  <svg width="36" height="36" viewBox="0 0 36 36">
+    <line x1="7" y1="30" x2="21" y2="15" stroke="#0a0714" stroke-width="2.6" stroke-linecap="round"/>
+    <circle id="wandLoop" cx="25" cy="11" r="7.5" fill="none" stroke="#E8A33D" stroke-width="2.4"/>
+    <circle cx="25" cy="11" r="7.5" fill="#E8A33D" opacity="0.1"/>
+  </svg>
+</div>
+
+<div class="bubble-meter" id="bubbleMeter">
+  <span class="bubble-meter-label">liquid</span>
+  <div class="bubble-meter-bar"><div class="bubble-meter-fill" id="bubbleMeterFill"></div></div>
+  <span class="bubble-meter-count" id="bubbleMeterCount">15</span>
+</div>
+
+<div class="bubble-total" id="bubbleTotal">🫧 popped: <span id="bubbleTotalCount">0</span></div>
+
+<div class="bubble-pool" id="bubblePool">
+  <div class="bubble-pool-liquid"></div>
+  <span class="bubble-pool-label">double-click to refill</span>
+</div>
+
+<div class="bubble-milestone" id="bubbleMilestone" style="display:none;">
+  <div class="bubble-milestone-inner" id="bubbleMilestoneBubble">
+    <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click to pop this one too</p>
+  </div>
+</div>
+
+
 
 <footer class="site-footer">
   <p>// roen · <span id="year"></span> //</p>
@@ -59,5 +98,6 @@
 
 <script src="script.js"></script>
 <script src="playground.js"></script>
+<script src="bubbles.js"></script>
 </body>
 </html>
