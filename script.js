@@ -62,7 +62,7 @@ typeOut(document.getElementById('typedWhoami'), 'whoami');
 
 /* ---------------- rotating role word ---------------- */
 const roleWordEl = document.getElementById('roleWord');
-const roles = ['cs student', 'builder', 'gamer at heart', 'future data scientist'];
+const roles = ['cs student', 'gamer', 'future software engineer', 'football enthusiast', 'gym goer', 'mahjong enjoyer'];
 let roleIndex = 0;
 
 function cycleRole() {
