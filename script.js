@@ -4,6 +4,16 @@ const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 /* ---------------- intro loader ---------------- */
 const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
+const bootLines = document.getElementById('bootLines');
+
+const BOOT_SEQUENCE = [
+  '<span class="boot-prompt">$</span> booting roen@ntu<span class="boot-cursor">▌</span>',
+  '<span class="boot-ok">[ok]</span> loading coursework cache',
+  '<span class="boot-ok">[ok]</span> compiling projects',
+  '<span class="boot-ok">[ok]</span> connecting to caffeine supply',
+  '<span class="boot-ok">[ok]</span> mounting portfolio at ~/',
+  'welcome.'
+];
 
 function hideLoader() {
   if (!loader) return;
@@ -15,8 +25,20 @@ if (loader) {
   if (sessionStorage.getItem('roen_intro_seen')) {
     loader.classList.add('is-hidden');
   } else {
-    const autoHide = setTimeout(hideLoader, 1800);
+    const timers = [];
+    BOOT_SEQUENCE.forEach((html, i) => {
+      const t = setTimeout(() => {
+        const line = document.createElement('p');
+        line.className = 'boot-line';
+        line.innerHTML = html;
+        bootLines.appendChild(line);
+        requestAnimationFrame(() => line.classList.add('is-visible'));
+      }, prefersReducedMotion ? 0 : i * 260);
+      timers.push(t);
+    });
+    const autoHide = setTimeout(hideLoader, prefersReducedMotion ? 200 : BOOT_SEQUENCE.length * 260 + 500);
     skipBtn.addEventListener('click', () => {
+      timers.forEach(clearTimeout);
       clearTimeout(autoHide);
       hideLoader();
     });

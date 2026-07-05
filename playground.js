@@ -33,7 +33,7 @@ const commands = {
   sudo       try it
   clear      clear the terminal`,
 
-  whoami: () => 'roen — cs student at NTU, building toward data science.',
+  whoami: () => 'roen · cs student at NTU, building toward software engineering.',
 
   about: () =>
     `computer science student at NTU. i like shipping things more than\ncollecting certificates. into fintech, investing, and turning messy\ndata into something a person can actually use.`,
