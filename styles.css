@@ -579,8 +579,7 @@ section {
   grid-template-rows: 0fr;
   opacity: 0;
   overflow: hidden;
-  transition: grid-template-rows 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
-  margin-top: 0;
+  transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
 }
 
 .project-more > p {
@@ -591,12 +590,14 @@ section {
   min-height: 0;
 }
 
+.project-more > p:first-child {
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
 .project-card[data-expanded="true"] .project-more {
   grid-template-rows: 1fr;
   opacity: 1;
-  margin-top: 22px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
 }
 
 /* ---------- contact ---------- */
@@ -623,10 +624,10 @@ section {
   font-size: 15px;
   padding: 14px 0;
   border-bottom: 1px solid var(--border);
-  transition: padding-left 0.15s ease, color 0.15s ease;
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.contact-line:hover { padding-left: 8px; color: var(--accent); }
+.contact-line:hover { transform: translateX(8px); color: var(--accent); }
 
 .contact-cmd { color: var(--sage); }
 .contact-line:hover .contact-cmd { color: var(--accent); }
@@ -836,8 +837,10 @@ button:focus-visible {
 .bubble-meter-fill {
   height: 100%;
   width: 100%;
+  transform-origin: left;
+  transform: scaleX(1);
   background: var(--accent);
-  transition: width 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .bubble-meter-fill.is-low { background: #d9736c; }
@@ -959,7 +962,8 @@ button:focus-visible {
   text-align: center;
   line-height: 1.7;
   margin: 0;
-  padding: 0 20px;
+  padding: 20px 24px;
+  max-width: 175px;
 }
 
 @media (max-width: 640px) {

@@ -74,7 +74,7 @@
   /* ---------- resource meter UI ---------- */
   function updateMeter() {
     const pct = Math.max(0, Math.min(1, resource / MAX_RESOURCE));
-    meterFill.style.width = (pct * 100) + '%';
+    meterFill.style.transform = `scaleX(${pct})`;
     meterFill.classList.toggle('is-low', pct <= 0.2);
     meterCount.textContent = Math.round(resource);
     wand.classList.toggle('is-empty', resource <= 0);
