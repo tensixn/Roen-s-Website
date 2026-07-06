@@ -37,10 +37,20 @@ function flipNameToHero() {
   void loaderName.offsetHeight; // force reflow so the transition engages before the transform changes
   loaderName.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(${scale})`;
 
-  setTimeout(() => {
+  let landed = false;
+  function land() {
+    if (landed) return;
+    landed = true;
     loaderName.classList.add('is-landed');
     hideLoader();
-  }, 700);
+  }
+  loaderName.addEventListener('transitionend', function onEnd(e) {
+    if (e.propertyName !== 'transform') return;
+    loaderName.removeEventListener('transitionend', onEnd);
+    land();
+  });
+  // fallback in case transitionend doesn't fire for any reason
+  setTimeout(land, 1300);
 }
 
 if (loader) {
@@ -81,7 +91,7 @@ if (loader) {
 
     timers.push(setTimeout(flipNameToHero, bootDuration + 1050));
 
-    const autoHide = setTimeout(hideLoader, bootDuration + 2200);
+    const autoHide = setTimeout(hideLoader, bootDuration + 2500);
     timers.push(autoHide);
 
     skipBtn.addEventListener('click', () => {
