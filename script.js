@@ -5,6 +5,8 @@ const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
 const bootLines = document.getElementById('bootLines');
+const loaderName = document.getElementById('loaderName');
+const heroNameTarget = document.getElementById('heroNameTarget');
 
 const BOOT_SEQUENCE = [
   '<span class="boot-prompt">$</span> booting roen@ntu<span class="boot-cursor">▌</span>',
@@ -21,9 +23,38 @@ function hideLoader() {
   sessionStorage.setItem('roen_intro_seen', '1');
 }
 
+function flipNameToHero() {
+  if (!loaderName || !heroNameTarget) { hideLoader(); return; }
+
+  const startRect = loaderName.getBoundingClientRect();
+  const endRect = heroNameTarget.getBoundingClientRect();
+
+  const scale = endRect.height / startRect.height;
+  const deltaX = (endRect.left + endRect.width / 2) - (startRect.left + startRect.width / 2);
+  const deltaY = (endRect.top + endRect.height / 2) - (startRect.top + startRect.height / 2);
+
+  loaderName.classList.add('is-flying');
+  void loaderName.offsetHeight; // force reflow so the transition engages before the transform changes
+  loaderName.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(${scale})`;
+
+  setTimeout(() => {
+    loaderName.classList.add('is-landed');
+    hideLoader();
+  }, 700);
+}
+
 if (loader) {
   if (sessionStorage.getItem('roen_intro_seen')) {
     loader.classList.add('is-hidden');
+  } else if (prefersReducedMotion) {
+    BOOT_SEQUENCE.forEach((html) => {
+      const line = document.createElement('p');
+      line.className = 'boot-line is-visible';
+      line.innerHTML = html;
+      bootLines.appendChild(line);
+    });
+    const t = setTimeout(hideLoader, 300);
+    skipBtn.addEventListener('click', () => { clearTimeout(t); hideLoader(); });
   } else {
     const timers = [];
     BOOT_SEQUENCE.forEach((html, i) => {
@@ -33,13 +64,28 @@ if (loader) {
         line.innerHTML = html;
         bootLines.appendChild(line);
         requestAnimationFrame(() => line.classList.add('is-visible'));
-      }, prefersReducedMotion ? 0 : i * 260);
+      }, i * 260);
       timers.push(t);
     });
-    const autoHide = setTimeout(hideLoader, prefersReducedMotion ? 200 : BOOT_SEQUENCE.length * 260 + 500);
+
+    const bootDuration = BOOT_SEQUENCE.length * 260;
+
+    timers.push(setTimeout(() => {
+      bootLines.style.transition = 'opacity 0.3s ease';
+      bootLines.style.opacity = '0';
+    }, bootDuration + 250));
+
+    timers.push(setTimeout(() => {
+      loaderName.classList.add('is-visible');
+    }, bootDuration + 500));
+
+    timers.push(setTimeout(flipNameToHero, bootDuration + 1050));
+
+    const autoHide = setTimeout(hideLoader, bootDuration + 2200);
+    timers.push(autoHide);
+
     skipBtn.addEventListener('click', () => {
       timers.forEach(clearTimeout);
-      clearTimeout(autoHide);
       hideLoader();
     });
   }

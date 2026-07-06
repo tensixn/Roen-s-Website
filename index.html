@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="cat-transparent.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,6 +18,7 @@
 <div class="loader" id="loader">
   <div class="loader-inner">
     <div class="boot-lines" id="bootLines"></div>
+    <h1 class="loader-name" id="loaderName">roen</h1>
     <button class="loader-skip" id="skipBtn" type="button">skip →</button>
   </div>
 </div>
@@ -63,7 +63,7 @@
         <span class="prompt-user">roen@ntu</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-sep">$</span>
         <span id="typedWhoami"></span><span class="cursor-blink" aria-hidden="true">▌</span>
       </p>
-      <h1 class="hero-name">hello, i'm roen!</h1>
+      <h1 class="hero-name">hello, i'm <span id="heroNameTarget">roen</span>!</h1>
       <p class="hero-role">i'm a <span class="role-word" id="roleWord">cs student</span></p>
       <p class="hero-tagline">Building small but useful things at NTU and working towards my goal of being a Software Engineer.</p>
       <div class="hero-links">
@@ -90,7 +90,7 @@
 
         <h3 class="about-sub">looking ahead</h3>
         <p>I'm aiming at software engineering, where the same instinct applies. Take a messy problem and build something solid and usable out of it. I'm also into fintech and investing, so a lot of my side projects end up somewhere between a trading tool and an engineering problem.</p>
-        <p>Outside of code I unwind with Valorant and pickup basketball. One is all precision and callouts, the other is just running around with friends, but both are good resets.</p>
+        <p>Outside of code I unwind with Valorant and pickup basketball. One is all precision and callouts, the other is just running around with friends, but both are a good reset.</p>
       </div>
 
       <aside class="status-card">

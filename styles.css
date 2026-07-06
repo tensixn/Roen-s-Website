@@ -108,6 +108,36 @@ a { color: inherit; text-decoration: none; }
 
 .loader-skip:hover { border-color: var(--accent); color: var(--accent); }
 
+.loader-name {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: clamp(56px, 13vw, 140px);
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.loader-name.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.loader-name.is-flying {
+  transition: transform 0.75s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.75s ease;
+}
+
+.loader-name.is-landed {
+  opacity: 0;
+}
+
 /* ---------- topbar ---------- */
 .topbar {
   position: sticky;
