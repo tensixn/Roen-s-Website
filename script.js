@@ -6,7 +6,7 @@ const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
 const bootLines = document.getElementById('bootLines');
 const loaderName = document.getElementById('loaderName');
-const heroNameTarget = document.getElementById('heroNameTarget');
+const heroHeadingEl = document.getElementById('heroHeading');
 
 const BOOT_SEQUENCE = [
   '<span class="boot-prompt">$</span> booting roen@ntu<span class="boot-cursor">▌</span>',
@@ -24,11 +24,11 @@ function hideLoader() {
 }
 
 function flipNameToHero() {
-  if (!loaderName || !heroNameTarget) { hideLoader(); return; }
+  if (!loaderName || !heroHeadingEl) { hideLoader(); return; }
 
   const startRect = loaderName.getBoundingClientRect();
-  const endRect = heroNameTarget.getBoundingClientRect();
-  const targetFontSize = window.getComputedStyle(heroNameTarget).fontSize;
+  const endRect = heroHeadingEl.getBoundingClientRect();
+  const targetFontSize = window.getComputedStyle(heroHeadingEl).fontSize;
 
   // lock in the current visual position/size as explicit px values,
   // swapping off the translate(-50%,-50%) centering trick with no visual change
