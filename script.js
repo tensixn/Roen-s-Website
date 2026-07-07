@@ -22,6 +22,25 @@ if (themeToggle) {
   });
 }
 
+/* ---------------- ambient background particles (stars in dark, dust in light) ---------------- */
+const bgEffects = document.getElementById('bgEffects');
+if (bgEffects && !prefersReducedMotion) {
+  const PARTICLE_COUNT = 30;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 1 + Math.random() * 2.2;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.top = Math.random() * 100 + 'vh';
+    p.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+    p.style.setProperty('--delay', (Math.random() * 6) + 's');
+    p.style.setProperty('--maxOpacity', (0.25 + Math.random() * 0.45).toFixed(2));
+    bgEffects.appendChild(p);
+  }
+}
+
 /* ---------------- intro loader ---------------- */
 const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
