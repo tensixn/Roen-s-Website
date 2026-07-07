@@ -6,7 +6,7 @@ const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
   function updateThemeIcon() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    themeToggle.textContent = isLight ? '☀' : '☾';
+    themeToggle.setAttribute('aria-checked', String(isLight));
   }
   updateThemeIcon();
   themeToggle.addEventListener('click', () => {

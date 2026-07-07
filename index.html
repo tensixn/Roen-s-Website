@@ -39,7 +39,13 @@
     <a href="#contact">contact</a>
     <a href="playground.html">playground</a>
   </nav>
-  <button class="theme-toggle" id="themeToggle" type="button" aria-label="toggle theme">☾</button>
+  <button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="toggle theme">
+    <span class="theme-toggle-track">
+      <span class="theme-toggle-icon theme-toggle-icon--moon">☾</span>
+      <span class="theme-toggle-icon theme-toggle-icon--sun">☀</span>
+      <span class="theme-toggle-thumb"></span>
+    </span>
+  </button>
   <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
     <span></span><span></span>
   </button>
