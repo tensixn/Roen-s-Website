@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+  (function() {
+    if (localStorage.getItem('roen_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>roen · CS @ NTU</title>
 <meta name="description" content="Roen, computer science student at NTU. Building small useful things, heading toward software engineering.">
@@ -32,6 +39,7 @@
     <a href="#contact">contact</a>
     <a href="playground.html">playground</a>
   </nav>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="toggle theme">☾</button>
   <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
     <span></span><span></span>
   </button>

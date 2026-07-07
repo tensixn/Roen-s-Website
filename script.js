@@ -1,6 +1,27 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 
+/* ---------------- theme toggle ---------------- */
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+  function updateThemeIcon() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    themeToggle.textContent = isLight ? '☀' : '☾';
+  }
+  updateThemeIcon();
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('roen_theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('roen_theme', 'light');
+    }
+    updateThemeIcon();
+  });
+}
+
 /* ---------------- intro loader ---------------- */
 const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
