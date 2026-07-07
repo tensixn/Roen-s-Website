@@ -16,7 +16,7 @@
   const MAX_RESOURCE = 15;
   const REFILL_AMOUNT = 20;
   const MAX_ON_SCREEN = 45;
-  const MILESTONE_STEP = 1000;
+  const MILESTONE_STEP = 10;
 
   let active = false;
   let resource = MAX_RESOURCE;
