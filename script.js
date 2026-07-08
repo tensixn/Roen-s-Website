@@ -41,8 +41,79 @@ if (bgEffects && !prefersReducedMotion) {
   }
 }
 
-/* ---------------- intro loader ---------------- */
-const loader = document.getElementById('loader');
+/* ---------------- floating/column/center social icons ---------------- */
+const socialIconEls = document.querySelectorAll('.social-icon');
+
+if (socialIconEls.length) {
+  const FLOAT_SPOTS = [
+    { xVw: 12, yVh: 24 },
+    { xVw: 84, yVh: 40 },
+    { xVw: 18, yVh: 70 }
+  ];
+
+  function setIconState(state) {
+    socialIconEls.forEach((icon, i) => {
+      icon.classList.toggle('is-floating', state === 'floating');
+
+      if (state === 'floating') {
+        const spot = FLOAT_SPOTS[i % FLOAT_SPOTS.length];
+        icon.style.left = spot.xVw + 'vw';
+        icon.style.top = spot.yVh + 'vh';
+      } else if (state === 'column') {
+        const spacing = 58;
+        const startY = window.innerHeight / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+        icon.style.left = (window.innerWidth - 68) + 'px';
+        icon.style.top = (startY + i * spacing) + 'px';
+      } else if (state === 'center') {
+        const spacing = 60;
+        const startX = window.innerWidth / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+        icon.style.left = (startX + i * spacing) + 'px';
+        icon.style.top = (window.innerHeight * 0.42) + 'px';
+      }
+    });
+  }
+
+  let currentIconState = 'floating';
+  setIconState('floating');
+
+  const aboutSection = document.getElementById('about');
+  const contactSection = document.getElementById('contact');
+
+  if ('IntersectionObserver' in window && aboutSection && contactSection) {
+    const iconObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const nextState = entry.target.id === 'contact' ? 'center' : 'column';
+          if (nextState !== currentIconState) {
+            currentIconState = nextState;
+            setIconState(nextState);
+          }
+        });
+
+        // back at the very top of the page, before "about" has ever been reached
+        if (window.scrollY < window.innerHeight * 0.5 && currentIconState !== 'floating') {
+          currentIconState = 'floating';
+          setIconState('floating');
+        }
+      },
+      { threshold: 0.3 }
+    );
+    iconObserver.observe(aboutSection);
+    iconObserver.observe(contactSection);
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight * 0.5 && currentIconState !== 'floating') {
+        currentIconState = 'floating';
+        setIconState('floating');
+      }
+    }, { passive: true });
+  }
+
+  window.addEventListener('resize', () => setIconState(currentIconState));
+}
+
+
 const skipBtn = document.getElementById('skipBtn');
 const bootLines = document.getElementById('bootLines');
 const loaderName = document.getElementById('loaderName');
