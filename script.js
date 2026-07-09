@@ -51,11 +51,13 @@ if (socialIconEls.length) {
     { xVw: 18, yVh: 70 }
   ];
 
-  function setIconState(state, animated) {
-    socialIconEls.forEach((icon, i) => {
+  function setIconState(state, instant) {
+    socialIconEls.forEach((icon) => {
       icon.classList.toggle('is-floating', state === 'floating');
-      icon.classList.toggle('is-animated', !!animated);
+      if (instant) icon.style.transition = 'none';
+    });
 
+    socialIconEls.forEach((icon, i) => {
       if (state === 'floating') {
         const spot = FLOAT_SPOTS[i % FLOAT_SPOTS.length];
         icon.style.left = spot.xVw + 'vw';
@@ -72,19 +74,23 @@ if (socialIconEls.length) {
         icon.style.top = (window.innerHeight * 0.42) + 'px';
       }
     });
+
+    if (instant) {
+      void socialIconEls[0].offsetHeight; // force reflow so the instant move is committed
+      requestAnimationFrame(() => {
+        socialIconEls.forEach((icon) => { icon.style.transition = ''; });
+      });
+    }
   }
 
   let currentIconState = 'floating';
-  setIconState('floating', false);
+  setIconState('floating', true);
 
   const topSection = document.getElementById('top');
   const aboutSection = document.getElementById('about');
   const contactSection = document.getElementById('contact');
 
   if ('IntersectionObserver' in window && topSection && aboutSection && contactSection) {
-    // instant on the floating -> column handoff (per request), smooth everywhere else
-    const STATE_ANIMATED = { floating: true, column: false, center: true };
-
     const iconObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -96,7 +102,7 @@ if (socialIconEls.length) {
 
           if (nextState !== currentIconState) {
             currentIconState = nextState;
-            setIconState(nextState, STATE_ANIMATED[nextState]);
+            setIconState(nextState, false);
           }
         });
       },
@@ -107,7 +113,7 @@ if (socialIconEls.length) {
     iconObserver.observe(contactSection);
   }
 
-  window.addEventListener('resize', () => setIconState(currentIconState, false));
+  window.addEventListener('resize', () => setIconState(currentIconState, true));
 }
 
 /* ---------------- intro loader ---------------- */
