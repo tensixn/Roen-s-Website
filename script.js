@@ -88,6 +88,7 @@ if (socialIconEls.length) {
 
   const topSection = document.getElementById('top');
   const aboutSection = document.getElementById('about');
+  const projectsSection = document.getElementById('projects');
   const contactSection = document.getElementById('contact');
 
   if ('IntersectionObserver' in window && topSection && aboutSection && contactSection) {
@@ -110,6 +111,7 @@ if (socialIconEls.length) {
     );
     iconObserver.observe(topSection);
     iconObserver.observe(aboutSection);
+    if (projectsSection) iconObserver.observe(projectsSection);
     iconObserver.observe(contactSection);
   }
 
