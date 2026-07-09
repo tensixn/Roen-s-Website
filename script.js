@@ -106,7 +106,7 @@ if (socialIconEls.length) {
           }
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0, rootMargin: '-50% 0px -50% 0px' }
     );
     iconObserver.observe(topSection);
     iconObserver.observe(aboutSection);
