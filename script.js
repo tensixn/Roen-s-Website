@@ -51,9 +51,10 @@ if (socialIconEls.length) {
     { xVw: 18, yVh: 70 }
   ];
 
-  function setIconState(state) {
+  function setIconState(state, animated) {
     socialIconEls.forEach((icon, i) => {
       icon.classList.toggle('is-floating', state === 'floating');
+      icon.classList.toggle('is-animated', !!animated);
 
       if (state === 'floating') {
         const spot = FLOAT_SPOTS[i % FLOAT_SPOTS.length];
@@ -62,7 +63,7 @@ if (socialIconEls.length) {
       } else if (state === 'column') {
         const spacing = 58;
         const startY = window.innerHeight / 2 - ((socialIconEls.length - 1) * spacing) / 2;
-        icon.style.left = (window.innerWidth - 68) + 'px';
+        icon.style.left = '24px';
         icon.style.top = (startY + i * spacing) + 'px';
       } else if (state === 'center') {
         const spacing = 60;
@@ -74,46 +75,43 @@ if (socialIconEls.length) {
   }
 
   let currentIconState = 'floating';
-  setIconState('floating');
+  setIconState('floating', false);
 
+  const topSection = document.getElementById('top');
   const aboutSection = document.getElementById('about');
   const contactSection = document.getElementById('contact');
 
-  if ('IntersectionObserver' in window && aboutSection && contactSection) {
+  if ('IntersectionObserver' in window && topSection && aboutSection && contactSection) {
+    // instant on the floating -> column handoff (per request), smooth everywhere else
+    const STATE_ANIMATED = { floating: true, column: false, center: true };
+
     const iconObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          const nextState = entry.target.id === 'contact' ? 'center' : 'column';
+          let nextState;
+          if (entry.target.id === 'top') nextState = 'floating';
+          else if (entry.target.id === 'contact') nextState = 'center';
+          else nextState = 'column';
+
           if (nextState !== currentIconState) {
             currentIconState = nextState;
-            setIconState(nextState);
+            setIconState(nextState, STATE_ANIMATED[nextState]);
           }
         });
-
-        // back at the very top of the page, before "about" has ever been reached
-        if (window.scrollY < window.innerHeight * 0.5 && currentIconState !== 'floating') {
-          currentIconState = 'floating';
-          setIconState('floating');
-        }
       },
-      { threshold: 0.3 }
+      { threshold: 0.35 }
     );
+    iconObserver.observe(topSection);
     iconObserver.observe(aboutSection);
     iconObserver.observe(contactSection);
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY < window.innerHeight * 0.5 && currentIconState !== 'floating') {
-        currentIconState = 'floating';
-        setIconState('floating');
-      }
-    }, { passive: true });
   }
 
-  window.addEventListener('resize', () => setIconState(currentIconState));
+  window.addEventListener('resize', () => setIconState(currentIconState, false));
 }
 
-
+/* ---------------- intro loader ---------------- */
+const loader = document.getElementById('loader');
 const skipBtn = document.getElementById('skipBtn');
 const bootLines = document.getElementById('bootLines');
 const loaderName = document.getElementById('loaderName');
