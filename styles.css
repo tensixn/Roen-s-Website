@@ -60,14 +60,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- ambient background effects (theme-dependent) ---------- */
 /* ---------- floating/column/center social icons ---------- */
-.social-icons {
-  z-index: 50;
-}
-
 .social-icon {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 60;
   width: 44px;
   height: 44px;
   border-radius: 50%;
