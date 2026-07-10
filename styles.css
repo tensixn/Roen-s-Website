@@ -94,6 +94,18 @@ a { color: inherit; text-decoration: none; }
   height: 18px;
 }
 
+.icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+.icon-light { display: none; }
+
+[data-theme="light"] .icon-dark { display: none; }
+[data-theme="light"] .icon-light { display: block; }
+
 .social-icon.is-floating {
   animation: icon-bob 4.5s ease-in-out infinite;
 }
