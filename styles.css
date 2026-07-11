@@ -1181,4 +1181,5 @@ button:focus-visible {
 
 @media (max-width: 640px) {
   .bubble-wand, .bubble-meter, .bubble-total, .bubble-pool { display: none !important; }
+  .social-icon { display: none !important; }
 }
