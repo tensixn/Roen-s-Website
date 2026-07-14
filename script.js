@@ -54,6 +54,7 @@ if (socialIconEls.length) {
   function setIconState(state, instant) {
     socialIconEls.forEach((icon) => {
       icon.classList.toggle('is-floating', state === 'floating');
+      icon.style.zIndex = state === 'center' ? '60' : '-1';
       if (instant) icon.style.transition = 'none';
     });
 
