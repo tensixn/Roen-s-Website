@@ -871,6 +871,13 @@ section {
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
   .status-card { position: static; }
   .project-main { flex-direction: column; }
+  .social-icon { display: none; }
+}
+
+/* belt-and-suspenders: hide on any touch-primary device, even if the
+   screen is wide enough to miss the breakpoint above (e.g. tablets) */
+@media (pointer: coarse) {
+  .social-icon { display: none; }
 }
 
 /* keyboard focus visibility */
