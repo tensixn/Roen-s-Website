@@ -58,6 +58,11 @@ if (socialIconEls.length) {
       if (instant) icon.style.transition = 'none';
     });
 
+    const centerAnchor = state === 'center'
+      ? document.querySelector('.contact-cta')
+      : null;
+    const anchorRect = centerAnchor ? centerAnchor.getBoundingClientRect() : null;
+
     socialIconEls.forEach((icon, i) => {
       if (state === 'floating') {
         const spot = FLOAT_SPOTS[i % FLOAT_SPOTS.length];
@@ -70,9 +75,17 @@ if (socialIconEls.length) {
         icon.style.top = (startY + i * spacing) + 'px';
       } else if (state === 'center') {
         const spacing = 60;
-        const startX = window.innerWidth / 2 - ((socialIconEls.length - 1) * spacing) / 2;
-        icon.style.left = (startX + i * spacing) + 'px';
-        icon.style.top = (window.innerHeight * 0.42) + 'px';
+        if (anchorRect) {
+          // sit in a row just below the send-message button
+          const startX = anchorRect.left + anchorRect.width / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+          const rowTop = anchorRect.bottom + 32;
+          icon.style.left = (startX + i * spacing) + 'px';
+          icon.style.top = rowTop + 'px';
+        } else {
+          const startX = window.innerWidth / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+          icon.style.left = (startX + i * spacing) + 'px';
+          icon.style.top = (window.innerHeight * 0.42) + 'px';
+        }
       }
     });
 
