@@ -60,11 +60,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- ambient background effects (theme-dependent) ---------- */
 /* ---------- floating/column/center social icons ---------- */
-.social-icon {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 60;
+.contact-icons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+.contact-icon {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -74,22 +77,17 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: lowercase;
-  transition: top 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-              left 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.social-icon:hover {
+.contact-icon:hover {
   border-color: var(--accent);
   color: var(--accent);
   box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15);
+  transform: translateY(-2px);
 }
 
-.social-icon svg {
+.contact-icon svg {
   width: 18px;
   height: 18px;
 }
@@ -105,18 +103,6 @@ a { color: inherit; text-decoration: none; }
 
 [data-theme="light"] .icon-dark { display: none; }
 [data-theme="light"] .icon-light { display: block; }
-
-.social-icon.is-floating {
-  animation: icon-bob 4.5s ease-in-out infinite;
-}
-
-.social-icon.is-floating:nth-child(2) { animation-delay: -1.5s; }
-.social-icon.is-floating:nth-child(3) { animation-delay: -3s; }
-
-@keyframes icon-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
-}
 
 .bg-effects {
   position: fixed;
@@ -826,8 +812,58 @@ section {
   max-width: 52ch;
 }
 
+.contact-form {
+  max-width: 560px;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15);
+}
+
+.contact-form textarea {
+  display: block;
+  margin-bottom: 22px;
+  min-height: 140px;
+}
+
 .contact-cta {
-  margin-bottom: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -846,9 +882,7 @@ section {
   pointer-events: none;
 }
 
-.contact-cta:hover::before {
-  left: 130%;
-}
+.contact-cta:hover::before { left: 130%; }
 
 .contact-cta:hover {
   box-shadow: 0 0 0 1px var(--accent), 0 0 18px 2px rgba(232, 163, 61, 0.45);
@@ -859,34 +893,17 @@ section {
   transition: transform 0.25s ease;
 }
 
-.contact-cta:hover .cta-arrow {
-  transform: translateX(5px);
-}
+.contact-cta:hover .cta-arrow { transform: translateX(5px); }
 
-.contact-links {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.contact-line {
-  display: flex;
-  gap: 14px;
-  align-items: baseline;
+.contact-form-status {
   font-family: var(--mono);
-  font-size: 15px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  transition: transform 0.15s ease, color 0.15s ease;
+  font-size: 13px;
+  margin: 14px 0 0;
+  min-height: 1em;
 }
 
-.contact-line:hover { transform: translateX(8px); color: var(--accent); }
-
-.contact-cmd { color: var(--sage); }
-.contact-line:hover .contact-cmd { color: var(--accent); }
-
-.contact-val { color: var(--text-dim); }
-.contact-line:hover .contact-val { color: var(--text); }
+.contact-form-status.is-success { color: var(--sage); }
+.contact-form-status.is-error { color: #d9736a; }
 
 /* ---------- footer ---------- */
 .site-footer {
@@ -906,13 +923,7 @@ section {
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
   .status-card { position: static; }
   .project-main { flex-direction: column; }
-  .social-icon { display: none; }
-}
-
-/* belt-and-suspenders: hide on any touch-primary device, even if the
-   screen is wide enough to miss the breakpoint above (e.g. tablets) */
-@media (pointer: coarse) {
-  .social-icon { display: none; }
+  .contact-form-row { grid-template-columns: 1fr; }
 }
 
 /* keyboard focus visibility */

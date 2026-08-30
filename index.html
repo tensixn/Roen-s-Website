@@ -37,19 +37,6 @@
 <div class="grain"></div>
 <div class="bg-effects" id="bgEffects" aria-hidden="true"></div>
 
-<div class="social-icons" id="socialIcons">
-  <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
-    <img src="GitHub_Invertocat_White.png" alt="GitHub" class="icon-img icon-dark">
-    <img src="GitHub_Invertocat_Black.png" alt="GitHub" class="icon-img icon-light">
-  </a>
-  <a href="https://www.linkedin.com/in/roenseow/" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">
-    <img src="InBug-White.png" alt="LinkedIn" class="icon-img icon-dark">
-    <img src="InBug-Black.png" alt="LinkedIn" class="icon-img icon-light">
-  </a>
-  <a href="mailto:neorwoes@gmail.com" class="social-icon" aria-label="Email">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
-  </a>
-</div>
 
 <!-- intro loader -->
 <div class="loader" id="loader">
@@ -308,24 +295,31 @@
     </div>
     <div class="contact-body">
       <p class="contact-intro">Open to internships, collab projects, and just talking through an idea. I usually respond within a day.</p>
-      <a href="mailto:neorwoes@gmail.com?subject=hey%20roen" class="btn btn-primary contact-cta">send message <span class="cta-arrow">→</span></a>
 
-      <div class="contact-links">
-        <a href="mailto:neorwoes@gmail.com" class="contact-line">
-          <span class="contact-cmd">mail -s "hey"</span>
-          <span class="contact-val">neorwoes@gmail.com</span>
+      <form id="contactForm" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <div class="contact-form-row">
+          <input type="text" name="name" placeholder="Your Name" autocomplete="name" required>
+          <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+        </div>
+        <textarea name="message" placeholder="What's on your mind?" rows="6" required></textarea>
+        <button type="submit" class="btn btn-primary contact-cta">
+          <span class="cta-label">send message</span>
+          <span class="cta-arrow">→</span>
+        </button>
+        <p class="contact-form-status" id="contactFormStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="contact-icons">
+        <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="contact-icon" aria-label="GitHub">
+          <img src="GitHub_Invertocat_White.png" alt="GitHub" class="icon-img icon-dark">
+          <img src="GitHub_Invertocat_Black.png" alt="GitHub" class="icon-img icon-light">
         </a>
-        <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="contact-line">
-          <span class="contact-cmd">open</span>
-          <span class="contact-val">github.com/tensixn</span>
+        <a href="https://www.linkedin.com/in/roenseow/" target="_blank" rel="noopener" class="contact-icon" aria-label="LinkedIn">
+          <img src="InBug-White.png" alt="LinkedIn" class="icon-img icon-dark">
+          <img src="InBug-Black.png" alt="LinkedIn" class="icon-img icon-light">
         </a>
-        <a href="https://www.linkedin.com/in/roenseow/" target="_blank" rel="noopener" class="contact-line">
-          <span class="contact-cmd">open</span>
-          <span class="contact-val">linkedin.com/in/roenseow</span>
-        </a>
-        <a href="Roen_Seow_Resume.pdf" target="_blank" rel="noopener" class="contact-line">
-          <span class="contact-cmd">open</span>
-          <span class="contact-val">My Resume</span>
+        <a href="mailto:neorwoes@gmail.com" class="contact-icon" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
         </a>
       </div>
     </div>
