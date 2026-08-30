@@ -130,6 +130,18 @@ if (socialIconEls.length) {
   }
 
   window.addEventListener('resize', () => setIconState(currentIconState, true));
+
+  // the button can still be scrolling into view at the exact moment the
+  // section trigger fires, so keep the icons glued to it while scrolling
+  let centerScrollRaf = false;
+  window.addEventListener('scroll', () => {
+    if (currentIconState !== 'center' || centerScrollRaf) return;
+    centerScrollRaf = true;
+    requestAnimationFrame(() => {
+      centerScrollRaf = false;
+      setIconState('center', true);
+    });
+  }, { passive: true });
 }
 
 /* ---------------- contact form (Formspree) ---------------- */
