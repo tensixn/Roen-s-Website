@@ -41,6 +41,84 @@ if (bgEffects && !prefersReducedMotion) {
   }
 }
 
+/* ---------------- floating/column/center social icons ---------------- */
+const socialIconEls = document.querySelectorAll('.social-icon');
+
+if (socialIconEls.length) {
+  const FLOAT_SPOTS = [
+    { xVw: 12, yVh: 24 },
+    { xVw: 84, yVh: 40 },
+    { xVw: 18, yVh: 70 }
+  ];
+
+  function setIconState(state, instant) {
+    socialIconEls.forEach((icon) => {
+      icon.classList.toggle('is-floating', state === 'floating');
+      icon.style.zIndex = '60';
+      if (instant) icon.style.transition = 'none';
+    });
+
+    socialIconEls.forEach((icon, i) => {
+      if (state === 'floating') {
+        const spot = FLOAT_SPOTS[i % FLOAT_SPOTS.length];
+        icon.style.left = spot.xVw + 'vw';
+        icon.style.top = spot.yVh + 'vh';
+      } else if (state === 'column') {
+        const spacing = 58;
+        const startY = window.innerHeight / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+        icon.style.left = '24px';
+        icon.style.top = (startY + i * spacing) + 'px';
+      } else if (state === 'center') {
+        const spacing = 60;
+        const startX = window.innerWidth / 2 - ((socialIconEls.length - 1) * spacing) / 2;
+        icon.style.left = (startX + i * spacing) + 'px';
+        icon.style.top = (window.innerHeight * 0.42) + 'px';
+      }
+    });
+
+    if (instant) {
+      void socialIconEls[0].offsetHeight; // force reflow so the instant move is committed
+      requestAnimationFrame(() => {
+        socialIconEls.forEach((icon) => { icon.style.transition = ''; });
+      });
+    }
+  }
+
+  let currentIconState = 'floating';
+  setIconState('floating', true);
+
+  const topSection = document.getElementById('top');
+  const aboutSection = document.getElementById('about');
+  const projectsSection = document.getElementById('projects');
+  const contactSection = document.getElementById('contact');
+
+  if ('IntersectionObserver' in window && topSection && aboutSection && contactSection) {
+    const iconObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          let nextState;
+          if (entry.target.id === 'top') nextState = 'floating';
+          else if (entry.target.id === 'contact') nextState = 'center';
+          else nextState = 'column';
+
+          if (nextState !== currentIconState) {
+            currentIconState = nextState;
+            setIconState(nextState, false);
+          }
+        });
+      },
+      { threshold: 0, rootMargin: '-50% 0px -50% 0px' }
+    );
+    iconObserver.observe(topSection);
+    iconObserver.observe(aboutSection);
+    if (projectsSection) iconObserver.observe(projectsSection);
+    iconObserver.observe(contactSection);
+  }
+
+  window.addEventListener('resize', () => setIconState(currentIconState, true));
+}
+
 /* ---------------- contact form (Formspree) ---------------- */
 const contactForm = document.getElementById('contactForm');
 const contactFormStatus = document.getElementById('contactFormStatus');
