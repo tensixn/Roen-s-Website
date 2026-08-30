@@ -826,7 +826,42 @@ section {
   max-width: 52ch;
 }
 
-.contact-cta { margin-bottom: 44px; }
+.contact-cta {
+  margin-bottom: 44px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.contact-cta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.contact-cta:hover::before {
+  left: 130%;
+}
+
+.contact-cta:hover {
+  box-shadow: 0 0 0 1px var(--accent), 0 0 18px 2px rgba(232, 163, 61, 0.45);
+}
+
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.contact-cta:hover .cta-arrow {
+  transform: translateX(5px);
+}
 
 .contact-links {
   display: flex;
