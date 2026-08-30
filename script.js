@@ -51,11 +51,19 @@ if (socialIconEls.length) {
     { xVw: 18, yVh: 70 }
   ];
 
-  function setIconState(state, instant) {
+  function setIconState(state, instant, quick) {
     socialIconEls.forEach((icon) => {
       icon.classList.toggle('is-floating', state === 'floating');
       icon.style.zIndex = '60';
-      if (instant) icon.style.transition = 'none';
+      if (instant) {
+        icon.style.transition = 'none';
+      } else if (quick) {
+        // short catch-up animation used while scroll-tracking the button,
+        // instead of the slow 1.4s transition meant for the big state changes
+        icon.style.transition = 'top 0.35s ease, left 0.35s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease';
+      } else {
+        icon.style.transition = '';
+      }
     });
 
     const centerAnchor = state === 'center'
@@ -132,14 +140,15 @@ if (socialIconEls.length) {
   window.addEventListener('resize', () => setIconState(currentIconState, true));
 
   // the button can still be scrolling into view at the exact moment the
-  // section trigger fires, so keep the icons glued to it while scrolling
+  // section trigger fires, so keep the icons glued to it while scrolling —
+  // with a quick catch-up animation rather than an instant snap
   let centerScrollRaf = false;
   window.addEventListener('scroll', () => {
     if (currentIconState !== 'center' || centerScrollRaf) return;
     centerScrollRaf = true;
     requestAnimationFrame(() => {
       centerScrollRaf = false;
-      setIconState('center', true);
+      setIconState('center', false, true);
     });
   }, { passive: true });
 }
