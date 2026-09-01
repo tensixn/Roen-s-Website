@@ -937,14 +937,10 @@ section {
   .status-card { position: static; }
   .project-main { flex-direction: column; }
   .contact-form-row { grid-template-columns: 1fr; }
-  .social-icon { display: none; }
 }
 
-/* belt-and-suspenders: hide on any touch-primary device, even if the
-   screen is wide enough to miss the breakpoint above (e.g. tablets) */
-@media (pointer: coarse) {
-  .social-icon { display: none; }
-}
+/* .social-icon visibility on mobile/touch is handled in script.js —
+   hidden only during the 'column' (side) state, shown otherwise */
 
 /* keyboard focus visibility */
 a:focus-visible,

@@ -51,10 +51,13 @@ if (socialIconEls.length) {
     { xVw: 18, yVh: 70 }
   ];
 
+  const isMobile = () => window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+
   function setIconState(state, instant, quick) {
     socialIconEls.forEach((icon) => {
       icon.classList.toggle('is-floating', state === 'floating');
       icon.style.zIndex = '60';
+      icon.style.display = (state === 'column' && isMobile()) ? 'none' : '';
       if (instant) {
         icon.style.transition = 'none';
       } else if (quick) {
