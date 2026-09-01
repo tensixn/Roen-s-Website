@@ -53,20 +53,16 @@ if (socialIconEls.length) {
 
   const isMobile = () => window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
 
-  function setIconState(state, instant, quick) {
+  function setIconState(state, instant) {
     socialIconEls.forEach((icon) => {
       icon.classList.toggle('is-floating', state === 'floating');
       icon.style.zIndex = '60';
+      // floating/column stay pinned to the viewport; center is anchored to
+      // the button's position in the page, so it scrolls with the content
+      // and doesn't need to be re-measured on every scroll event
+      icon.style.position = (state === 'center') ? 'absolute' : 'fixed';
       icon.style.display = (state === 'column' && isMobile()) ? 'none' : '';
-      if (instant) {
-        icon.style.transition = 'none';
-      } else if (quick) {
-        // short catch-up animation used while scroll-tracking the button,
-        // instead of the slow 1.4s transition meant for the big state changes
-        icon.style.transition = 'top 0.35s ease, left 0.35s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease';
-      } else {
-        icon.style.transition = '';
-      }
+      icon.style.transition = instant ? 'none' : '';
     });
 
     const centerAnchor = state === 'center'
@@ -87,15 +83,15 @@ if (socialIconEls.length) {
       } else if (state === 'center') {
         const spacing = 60;
         if (anchorRect) {
-          // sit in a row just below the send-message button
+          // sit in a row just below the send-message button, in document
+          // coordinates so it stays put as the page is scrolled
           const startX = anchorRect.left + anchorRect.width / 2 - ((socialIconEls.length - 1) * spacing) / 2;
           const rowTop = anchorRect.bottom + 32;
-          icon.style.left = (startX + i * spacing) + 'px';
-          icon.style.top = rowTop + 'px';
+          icon.style.left = (startX + i * spacing + window.scrollX) + 'px';
+          icon.style.top = (rowTop + window.scrollY) + 'px';
         } else {
-          const startX = window.innerWidth / 2 - ((socialIconEls.length - 1) * spacing) / 2;
-          icon.style.left = (startX + i * spacing) + 'px';
-          icon.style.top = (window.innerHeight * 0.42) + 'px';
+          icon.style.left = (window.innerWidth / 2 + window.scrollX) + 'px';
+          icon.style.top = (window.innerHeight * 0.6 + window.scrollY) + 'px';
         }
       }
     });
@@ -141,19 +137,6 @@ if (socialIconEls.length) {
   }
 
   window.addEventListener('resize', () => setIconState(currentIconState, true));
-
-  // the button can still be scrolling into view at the exact moment the
-  // section trigger fires, so keep the icons glued to it while scrolling —
-  // with a quick catch-up animation rather than an instant snap
-  let centerScrollRaf = false;
-  window.addEventListener('scroll', () => {
-    if (currentIconState !== 'center' || centerScrollRaf) return;
-    centerScrollRaf = true;
-    requestAnimationFrame(() => {
-      centerScrollRaf = false;
-      setIconState('center', false, true);
-    });
-  }, { passive: true });
 }
 
 /* ---------------- contact form (Formspree) ---------------- */
