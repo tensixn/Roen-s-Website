@@ -61,7 +61,9 @@ if (socialIconEls.length) {
       // the button's position in the page, so it scrolls with the content
       // and doesn't need to be re-measured on every scroll event
       icon.style.position = (state === 'center') ? 'absolute' : 'fixed';
-      icon.style.display = (state === 'column' && isMobile()) ? 'none' : '';
+      // on mobile, only show the icons once they've locked into the
+      // end/center state — hidden during both floating and column
+      icon.style.display = (state !== 'center' && isMobile()) ? 'none' : '';
       icon.style.transition = instant ? 'none' : '';
     });
 
