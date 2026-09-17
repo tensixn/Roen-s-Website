@@ -208,18 +208,26 @@ function flipNameToHero() {
 
   // lock in the current visual position/size as explicit px values,
   // swapping off the translate(-50%,-50%) centering trick with no visual change
+  loaderName.style.transition = 'none';
   loaderName.style.left = startRect.left + 'px';
   loaderName.style.top = startRect.top + 'px';
   loaderName.style.transform = 'none';
-  void loaderName.offsetHeight; // force reflow so this swap is committed before the transition starts
 
-  loaderName.classList.add('is-flying');
-  void loaderName.offsetHeight; // force reflow so the transition engages before the next values apply
+  // iOS Safari doesn't reliably pick up a style change forced via a single
+  // offsetHeight reflow before the next mutation — double rAF guarantees the
+  // "before" state is actually painted first, so the transition below plays
+  // instead of silently no-opping and jump-cutting to the fallback below
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      loaderName.classList.add('is-flying');
+      loaderName.style.transition = ''; // hand control back to the .is-flying transition rule
 
-  // now animate to the real target's exact position and exact font-size
-  loaderName.style.left = endRect.left + 'px';
-  loaderName.style.top = endRect.top + 'px';
-  loaderName.style.fontSize = targetFontSize;
+      // now animate to the real target's exact position and exact font-size
+      loaderName.style.left = endRect.left + 'px';
+      loaderName.style.top = endRect.top + 'px';
+      loaderName.style.fontSize = targetFontSize;
+    });
+  });
 
   let landed = false;
   function land() {
@@ -234,7 +242,7 @@ function flipNameToHero() {
     land();
   });
   // fallback in case transitionend doesn't fire for any reason
-  setTimeout(land, 1300);
+  setTimeout(land, 1500);
 }
 
 if (loader) {
