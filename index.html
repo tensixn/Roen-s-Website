@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>
+  document.documentElement.classList.add('js');
   (function() {
     if (localStorage.getItem('roen_theme') === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
@@ -35,6 +36,7 @@
 <body>
 
 <div class="grain"></div>
+<div class="scroll-progress" aria-hidden="true"></div>
 <div class="bg-effects" id="bgEffects" aria-hidden="true"></div>
 
 <div class="social-icons" id="socialIcons">
@@ -94,10 +96,10 @@
 
 <!-- scroll progress dots -->
 <nav class="scroll-dots" aria-hidden="true">
-  <a href="#top" class="dot" data-section="top"></a>
-  <a href="#about" class="dot" data-section="about"></a>
-  <a href="#projects" class="dot" data-section="projects"></a>
-  <a href="#contact" class="dot" data-section="contact"></a>
+  <a href="#top" class="dot" data-section="top" data-label="top"></a>
+  <a href="#about" class="dot" data-section="about" data-label="about"></a>
+  <a href="#projects" class="dot" data-section="projects" data-label="projects"></a>
+  <a href="#contact" class="dot" data-section="contact" data-label="contact"></a>
 </nav>
 
 <main>
@@ -128,7 +130,7 @@
       <span class="tag">~/about</span>
       <h2>about</h2>
     </div>
-    <div class="about-grid">
+    <div class="about-grid" data-reveal-group>
       <div class="about-text">
         <h3 class="about-sub">background</h3>
         <p>I'm a computer science student at Nanyang Technological University. My interest in technology and computing started when I was young, being introduced and quickly being interested in games and technology. I love researching about new tech and upcoming games, seeing how new and different mechanics are implemented.</p>
@@ -307,7 +309,7 @@
       <span class="tag">~/contact</span>
       <h2>contact</h2>
     </div>
-    <div class="contact-body">
+    <div class="contact-body" data-reveal-group>
       <p class="contact-intro">Open to internships, collab projects, and just talking through an idea. I usually respond within a day.</p>
 
       <form id="contactForm" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">

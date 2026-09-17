@@ -1,6 +1,5 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
-
 /* ---------------- theme toggle ---------------- */
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
@@ -19,6 +18,19 @@ if (themeToggle) {
       localStorage.setItem('roen_theme', 'light');
     }
     updateThemeIcon();
+
+    // little pulse ring on the toggle + gently settle the background particles
+    const track = themeToggle.querySelector('.theme-toggle-track');
+    if (track) {
+      track.classList.remove('is-pulsing');
+      void track.offsetWidth;
+      track.classList.add('is-pulsing');
+    }
+    const bgFx = document.getElementById('bgEffects');
+    if (bgFx && !prefersReducedMotion) {
+      bgFx.classList.add('is-switching');
+      setTimeout(() => bgFx.classList.remove('is-switching'), 600);
+    }
   });
 }
 
@@ -39,6 +51,47 @@ if (bgEffects && !prefersReducedMotion) {
     p.style.setProperty('--maxOpacity', (0.25 + Math.random() * 0.45).toFixed(2));
     bgEffects.appendChild(p);
   }
+
+  // gentle parallax — particles drift at a slightly different rate than the page
+  if (!isMobileViewport()) {
+    const speeds = [];
+    const particleEls = bgEffects.querySelectorAll('.particle');
+    particleEls.forEach((p) => speeds.push(0.4 + Math.random() * 0.5)); // 40–90% of scroll speed
+    let parallaxTicking = false;
+    window.addEventListener('scroll', () => {
+      if (parallaxTicking) return;
+      parallaxTicking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        particleEls.forEach((p, i) => {
+          p.style.translate = '0 ' + (-y * speeds[i] * 0.08) + 'px';
+        });
+        parallaxTicking = false;
+      });
+    }, { passive: true });
+  }
+
+  // occasional shooting star in dark mode
+  if (!prefersReducedMotion && document.documentElement.getAttribute('data-theme') !== 'light') {
+    const spawnShootingStar = () => {
+      if (document.documentElement.getAttribute('data-theme') === 'light') return;
+      const s = document.createElement('div');
+      s.className = 'shooting-star';
+      s.style.left = (20 + Math.random() * 70) + 'vw';
+      s.style.top = (5 + Math.random() * 30) + 'vh';
+      s.style.setProperty('--angle', (18 + Math.random() * 24) + 'deg');
+      s.style.setProperty('--dx', (200 + Math.random() * 220) + 'px');
+      s.style.setProperty('--dy', (100 + Math.random() * 120) + 'px');
+      bgEffects.appendChild(s);
+      setTimeout(() => s.remove(), 1600);
+    };
+    setTimeout(spawnShootingStar, 4000 + Math.random() * 6000);
+    setInterval(() => { if (Math.random() < 0.5) spawnShootingStar(); }, 9000);
+  }
+}
+
+function isMobileViewport() {
+  return window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
 }
 
 /* ---------------- floating/column/center social icons ---------------- */
@@ -127,6 +180,18 @@ if (socialIconEls.length) {
           if (nextState !== currentIconState) {
             currentIconState = nextState;
             setIconState(nextState, false);
+            // quick ripple at each icon's position to sell the state jump
+            if (!prefersReducedMotion) {
+              socialIconEls.forEach((icon) => {
+                const r = icon.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'icon-ripple';
+                ripple.style.left = (r.left + r.width / 2 - 6) + 'px';
+                ripple.style.top = (r.top + r.height / 2 - 6) + 'px';
+                document.body.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 750);
+              });
+            }
           }
         });
       },
@@ -171,6 +236,9 @@ if (contactForm && contactFormStatus) {
     } catch (err) {
       contactFormStatus.textContent = 'something went wrong — email me directly at neorwoes@gmail.com instead.';
       contactFormStatus.classList.add('is-error');
+      contactForm.classList.remove('is-shake');
+      void contactForm.offsetWidth;
+      contactForm.classList.add('is-shake');
     } finally {
       submitBtn.disabled = false;
     }
@@ -197,6 +265,77 @@ function hideLoader() {
   if (!loader) return;
   loader.classList.add('is-hidden');
   sessionStorage.setItem('roen_intro_seen', '1');
+}
+
+// decode effect for the section headings (h2s scramble in like a terminal)
+const GLYPHS = '01<>/_{}[]$#';
+
+function decodeText(el) {
+  if (!el || el.dataset.decoded) return;
+  el.dataset.decoded = '1';
+  const finalText = el.textContent;
+  const duration = 500;
+  const start = performance.now();
+
+  function frame(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const revealed = Math.floor(t * finalText.length);
+    let out = finalText.slice(0, revealed);
+    for (let i = revealed; i < finalText.length; i++) {
+      out += finalText[i] === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+    }
+    el.textContent = out;
+    if (t < 1) requestAnimationFrame(frame);
+    else el.textContent = finalText;
+  }
+  requestAnimationFrame(frame);
+}
+
+const decodeObserver = 'IntersectionObserver' in window && !prefersReducedMotion
+  ? new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          decodeText(entry.target);
+          decodeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 })
+  : null;
+
+document.querySelectorAll('.section-head h2').forEach((h) => {
+  if (decodeObserver) decodeObserver.observe(h);
+  else h.dataset.decoded = '1';
+});
+
+// mark the page as loaded so the hero elements cascade in.
+// if the intro is playing, wait until the name lands so the cascade reads as
+// a continuation of the intro; otherwise fire as soon as the page is ready.
+let heroRevealed = false;
+function markLoaded() {
+  if (heroRevealed) return;
+  heroRevealed = true;
+  document.body.classList.add('is-loaded');
+}
+
+function isLoaderPlaying() {
+  return loader
+    && !sessionStorage.getItem('roen_intro_seen')
+    && !loader.classList.contains('is-hidden');
+}
+
+if (isLoaderPlaying()) {
+  loader.addEventListener('transitionend', (e) => {
+    if (e.target === loader) markLoaded();
+  });
+  // safety net if the transitionend never fires (skip click, reduced motion, etc.)
+  setTimeout(markLoaded, 4500);
+} else {
+  if (document.readyState === 'complete') {
+    markLoaded();
+  } else {
+    window.addEventListener('load', markLoaded);
+    setTimeout(markLoaded, 2500);
+  }
 }
 
 function flipNameToHero() {
@@ -293,6 +432,14 @@ if (loader) {
   }
 }
 
+/* ---------------- project cards: staggered entrance ---------------- */
+const projectList = document.querySelector('.project-list');
+if (projectList && !prefersReducedMotion) {
+  projectList.setAttribute('data-reveal-group', '');
+  // the empty "more coming" card shouldn't be part of the stagger ordering issue,
+  // CSS handles delays via nth-child, nothing to do here beyond opting in
+}
+
 /* ---------------- mobile nav ---------------- */
 const menuToggle = document.getElementById('menuToggle');
 const menuClose = document.getElementById('menuClose');
@@ -338,15 +485,15 @@ let roleIndex = 0;
 function cycleRole() {
   if (!roleWordEl) return;
   roleIndex = (roleIndex + 1) % roles.length;
-  roleWordEl.style.opacity = '0';
+  roleWordEl.classList.remove('is-swapping');
+  void roleWordEl.offsetWidth;
+  roleWordEl.classList.add('is-swapping');
   setTimeout(() => {
     roleWordEl.textContent = roles[roleIndex];
-    roleWordEl.style.opacity = '1';
-  }, 250);
+  }, 240);
 }
 
 if (roleWordEl) {
-  roleWordEl.style.transition = 'opacity 0.25s ease';
   if (!prefersReducedMotion) setInterval(cycleRole, 2600);
 }
 
@@ -363,7 +510,7 @@ document.querySelectorAll('.project-card[data-expanded]').forEach((card) => {
 });
 
 /* ---------------- reveal on scroll ---------------- */
-const revealEls = document.querySelectorAll('.reveal');
+const revealEls = document.querySelectorAll('.reveal, [data-reveal-group]');
 if ('IntersectionObserver' in window && revealEls.length) {
   const revealObserver = new IntersectionObserver(
     (entries) => {
@@ -379,6 +526,24 @@ if ('IntersectionObserver' in window && revealEls.length) {
   revealEls.forEach((el) => revealObserver.observe(el));
 } else {
   revealEls.forEach((el) => el.classList.add('is-visible'));
+}
+
+/* ---------------- scroll progress bar ---------------- */
+const progressBar = document.querySelector('.scroll-progress');
+if (progressBar && !prefersReducedMotion) {
+  let progressTicking = false;
+  const updateProgress = () => {
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - window.innerHeight;
+    progressBar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+    progressTicking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (progressTicking) return;
+    progressTicking = true;
+    requestAnimationFrame(updateProgress);
+  }, { passive: true });
+  updateProgress();
 }
 
 /* ---------------- scroll dots active state ---------------- */

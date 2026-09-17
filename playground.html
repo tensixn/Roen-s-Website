@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>
+  document.documentElement.classList.add('js');
   (function() {
     if (localStorage.getItem('roen_theme') === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
@@ -32,6 +33,7 @@
 <body>
 
 <div class="grain"></div>
+<div class="scroll-progress" aria-hidden="true"></div>
 <div class="bg-effects" id="bgEffects" aria-hidden="true"></div>
 
 <header class="topbar">
@@ -79,7 +81,7 @@
 
   <p class="terminal-hint">try: <span>help</span> · <span>whoami</span> · <span>projects</span> · <span>spire</span> · <span>sudo</span></p>
 
-  <div class="bubble-section">
+  <div class="bubble-section" data-reveal-group>
     <div class="section-head">
       <h2>bubble wand</h2>
     </div>
