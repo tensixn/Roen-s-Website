@@ -11,6 +11,8 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
 <title>roen · CS @ NTU</title>
 <meta name="description" content="Roen, computer science student at NTU. Building small useful things, heading toward software engineering.">
 
@@ -312,12 +314,14 @@
     <div class="contact-body" data-reveal-group>
       <p class="contact-intro">Open to internships, collab projects, and just talking through an idea. I usually respond within a day.</p>
 
-      <form id="contactForm" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <form id="contactForm" class="contact-form" action="https://formspree.io/f/mgavvrro" method="POST">
         <div class="contact-form-row">
           <input type="text" name="name" placeholder="Your Name" autocomplete="name" required>
           <input type="email" name="email" placeholder="Email" autocomplete="email" required>
         </div>
         <textarea name="message" placeholder="What's on your mind?" rows="6" required></textarea>
+        <!-- honeypot field for Formspree's spam filtering — hidden from humans -->
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
         <button type="submit" class="btn btn-primary contact-cta">
           <span class="cta-label">send message</span>
           <span class="cta-arrow">→</span>

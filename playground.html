@@ -11,6 +11,8 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
 <title>playground — roen</title>
 <meta name="description" content="A small handwritten terminal to poke around in. Try 'help'.">
 
@@ -51,7 +53,21 @@
       <span class="theme-toggle-thumb"></span>
     </span>
   </button>
+  <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
+    <span></span><span></span>
+  </button>
 </header>
+
+<!-- mobile nav overlay -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="menu-close" id="menuClose" aria-label="close menu">✕</button>
+  <nav>
+    <a href="index.html#about">about</a>
+    <a href="index.html#projects">projects</a>
+    <a href="index.html#contact">contact</a>
+    <a href="playground.html" class="is-current">playground</a>
+  </nav>
+</div>
 
 <main class="playground-main">
   <a href="index.html" class="playground-back">← back to site</a>
@@ -79,14 +95,15 @@
     </div>
   </div>
 
-  <p class="terminal-hint">try: <span>help</span> · <span>whoami</span> · <span>projects</span> · <span>spire</span> · <span>sudo</span></p>
+  <p class="terminal-hint">try: <span>help</span> · <span>neofetch</span> · <span>banner</span> · <span>cat</span> · <span>open</span> · <span>theme</span> · <span>sudo</span></p>
+  <p class="terminal-hint terminal-hint--keys">tab completes · ↑/↓ walks history</p>
 
   <div class="bubble-section" data-reveal-group>
     <div class="section-head">
       <h2>bubble wand</h2>
     </div>
     <p class="bubble-intro">A cursor that blows bubbles. Move around, scroll, click things, your liquid runs out eventually, dip the wand in the pool to refill. Pop 10 and something happens.</p>
-    <button class="btn btn-primary" id="bubbleToggle" type="button">🫧 activate bubble wand</button>
+    <button class="btn btn-primary" id="bubbleToggle" type="button" aria-pressed="false">🫧 activate bubble wand</button>
   </div>
 </main>
 
@@ -113,9 +130,12 @@
 </div>
 
 <div class="bubble-milestone" id="bubbleMilestone" style="display:none;">
-  <div class="bubble-milestone-inner" id="bubbleMilestoneBubble">
-    <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click to pop this one too</p>
-  </div>
+  <button class="bubble-milestone-backdrop" id="bubbleMilestoneBackdrop" type="button" aria-label="dismiss milestone"></button>
+  <span class="bubble-wrap">
+    <div class="bubble-milestone-inner" id="bubbleMilestoneBubble">
+      <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click to pop this one too</p>
+    </div>
+  </span>
 </div>
 
 

@@ -2,22 +2,34 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 /* ---------------- theme toggle ---------------- */
 const themeToggle = document.getElementById('themeToggle');
-if (themeToggle) {
-  function updateThemeIcon() {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    themeToggle.setAttribute('aria-checked', String(isLight));
+
+// single place where the theme actually flips, so every entry point
+// (toggle button, playground `theme` command) stays in sync
+function setTheme(mode) {
+  if (mode === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('roen_theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('roen_theme', 'dark');
   }
-  updateThemeIcon();
+  updateThemeToggleState();
+  // let other pages/scripts react (the terminal prints the new mode)
+  document.dispatchEvent(new CustomEvent('roen:themechange', { detail: { theme: mode } }));
+}
+
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+}
+
+function updateThemeToggleState() {
+  if (themeToggle) themeToggle.setAttribute('aria-checked', String(currentTheme() === 'light'));
+}
+
+if (themeToggle) {
+  updateThemeToggleState();
   themeToggle.addEventListener('click', () => {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    if (isLight) {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('roen_theme', 'dark');
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('roen_theme', 'light');
-    }
-    updateThemeIcon();
+    setTheme(currentTheme() === 'light' ? 'dark' : 'light');
 
     // little pulse ring on the toggle + gently settle the background particles
     const track = themeToggle.querySelector('.theme-toggle-track');
@@ -92,6 +104,24 @@ if (bgEffects && !prefersReducedMotion) {
 
 function isMobileViewport() {
   return window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+}
+
+/* ---------------- topbar elevation ---------------- */
+/* the topbar picks up a solid border + shadow once the page scrolls, so it
+   separates from content instead of floating invisibly over it */
+const topbar = document.querySelector('.topbar');
+if (topbar) {
+  let topbarTicking = false;
+  const updateTopbar = () => {
+    topbar.classList.toggle('is-scrolled', window.scrollY > 12);
+    topbarTicking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (topbarTicking) return;
+    topbarTicking = true;
+    requestAnimationFrame(updateTopbar);
+  }, { passive: true });
+  updateTopbar();
 }
 
 /* ---------------- floating/column/center social icons ---------------- */
@@ -211,11 +241,24 @@ const contactForm = document.getElementById('contactForm');
 const contactFormStatus = document.getElementById('contactFormStatus');
 
 if (contactForm && contactFormStatus) {
+  const SUBMIT_LABEL = 'send message';
+  const PLACEHOLDER_IDS = ['YOUR_FORM_ID', 'FORM_ID', 'XXXXXXX'];
+
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // form isn't hooked up to a real Formspree endpoint yet — fail fast with
+    // instructions instead of a confusing network error
+    if (PLACEHOLDER_IDS.some((id) => contactForm.action.includes(id))) {
+      contactFormStatus.textContent = 'form isn\'t wired up yet — the site owner still needs to add a Formspree form ID. email me directly at neorwoes@gmail.com instead.';
+      contactFormStatus.className = 'contact-form-status is-error';
+      return;
+    }
+
     const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const ctaLabel = submitBtn.querySelector('.cta-label');
     submitBtn.disabled = true;
+    if (ctaLabel) ctaLabel.textContent = 'sending…';
     contactFormStatus.textContent = 'sending…';
     contactFormStatus.className = 'contact-form-status';
 
@@ -228,19 +271,41 @@ if (contactForm && contactFormStatus) {
 
       if (response.ok) {
         contactFormStatus.textContent = 'message sent — thanks, I\'ll get back to you soon.';
-        contactFormStatus.classList.add('is-success');
+        contactFormStatus.className = 'contact-form-status is-success';
         contactForm.reset();
+        // the button itself confirms: label swaps to a check, border goes sage
+        submitBtn.classList.add('is-success');
+        if (ctaLabel) ctaLabel.textContent = 'sent ✓';
+        setTimeout(() => {
+          submitBtn.classList.remove('is-success');
+          if (ctaLabel) ctaLabel.textContent = SUBMIT_LABEL;
+        }, 2600);
       } else {
-        throw new Error('non-200 response');
+        // Formspree returns JSON errors ({ errors: [...] }) with useful reasons
+        // (validation, rate limit, disabled form…) — surface them if we can
+        let reason = '';
+        try {
+          const data = await response.json();
+          if (data && Array.isArray(data.errors) && data.errors.length) {
+            reason = ' (' + data.errors.map((er) => er.message || String(er)).join('; ') + ')';
+          }
+        } catch (_) { /* non-JSON body — ignore */ }
+        if (response.status === 429) reason = ' (too many attempts, try again later)';
+        contactFormStatus.textContent = 'didn\'t go through' + reason + ' — email me directly at neorwoes@gmail.com instead.';
+        contactFormStatus.className = 'contact-form-status is-error';
+        contactForm.classList.remove('is-shake');
+        void contactForm.offsetWidth;
+        contactForm.classList.add('is-shake');
       }
     } catch (err) {
       contactFormStatus.textContent = 'something went wrong — email me directly at neorwoes@gmail.com instead.';
-      contactFormStatus.classList.add('is-error');
+      contactFormStatus.className = 'contact-form-status is-error';
       contactForm.classList.remove('is-shake');
       void contactForm.offsetWidth;
       contactForm.classList.add('is-shake');
     } finally {
       submitBtn.disabled = false;
+      if (!submitBtn.classList.contains('is-success') && ctaLabel) ctaLabel.textContent = SUBMIT_LABEL;
     }
   });
 }
@@ -315,6 +380,7 @@ function markLoaded() {
   if (heroRevealed) return;
   heroRevealed = true;
   document.body.classList.add('is-loaded');
+  document.dispatchEvent(new CustomEvent('hero:loaded'));
 }
 
 function isLoaderPlaying() {
@@ -445,14 +511,24 @@ const menuToggle = document.getElementById('menuToggle');
 const menuClose = document.getElementById('menuClose');
 const mobileNav = document.getElementById('mobileNav');
 
+let lastFocused = null;
 function openMobileNav() {
+  lastFocused = document.activeElement;
   mobileNav.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
   menuToggle.setAttribute('aria-expanded', 'true');
+  menuClose.focus();
 }
 function closeMobileNav() {
   mobileNav.classList.remove('is-open');
+  document.body.style.overflow = '';
   menuToggle.setAttribute('aria-expanded', 'false');
+  if (lastFocused && lastFocused.focus) lastFocused.focus();
 }
+// playground page has no mobile nav — guard against null
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mobileNav && mobileNav.classList.contains('is-open')) closeMobileNav();
+});
 
 if (menuToggle) menuToggle.addEventListener('click', openMobileNav);
 if (menuClose) menuClose.addEventListener('click', closeMobileNav);
@@ -475,26 +551,55 @@ function typeOut(el, text, speed = 90) {
     if (i >= text.length) clearInterval(interval);
   }, speed);
 }
-typeOut(document.getElementById('typedWhoami'), 'whoami');
+// Start the typing once the hero is actually visible — otherwise it plays
+// behind the intro loader and the user lands on an already-finished line.
+// Delay by a beat so it reads as part of the intro cascade on repeat visits.
+function startTypedWhoami() {
+  setTimeout(() => typeOut(document.getElementById('typedWhoami'), 'whoami'), prefersReducedMotion ? 0 : 450);
+}
+if (document.body.classList.contains('is-loaded')) {
+  startTypedWhoami();
+} else {
+  document.addEventListener('hero:loaded', startTypedWhoami, { once: true });
+}
 
 /* ---------------- rotating role word ---------------- */
 const roleWordEl = document.getElementById('roleWord');
 const roles = ['cs student', 'gamer', 'future software engineer', 'football enthusiast', 'gym goer', 'mahjong enjoyer'];
 let roleIndex = 0;
 
-function cycleRole() {
-  if (!roleWordEl) return;
-  roleIndex = (roleIndex + 1) % roles.length;
-  roleWordEl.classList.remove('is-swapping');
-  void roleWordEl.offsetWidth;
-  roleWordEl.classList.add('is-swapping');
-  setTimeout(() => {
-    roleWordEl.textContent = roles[roleIndex];
-  }, 240);
-}
-
 if (roleWordEl) {
+  // the swap animates width too, so the surrounding text doesn't jump when
+  // the next role is a different length. width is set to an exact px value
+  // via a hidden measurer, then animated alongside the text swap.
+  const measurer = document.createElement('span');
+  measurer.className = 'role-word role-word--measure';
+  measurer.setAttribute('aria-hidden', 'true');
+  roleWordEl.parentNode.appendChild(measurer);
+  const measure = (text) => { measurer.textContent = text; return measurer.offsetWidth; };
+
+  roleWordEl.style.width = roleWordEl.offsetWidth + 'px';
+
+  function cycleRole() {
+    roleIndex = (roleIndex + 1) % roles.length;
+    const next = roles[roleIndex];
+    roleWordEl.style.width = measure(next) + 'px';
+    roleWordEl.classList.remove('is-swapping');
+    void roleWordEl.offsetWidth;
+    roleWordEl.classList.add('is-swapping');
+    setTimeout(() => {
+      roleWordEl.textContent = next;
+    }, 240);
+  }
+
   if (!prefersReducedMotion) setInterval(cycleRole, 2600);
+
+  // re-measure once webfonts finish loading so widths don't go stale
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      roleWordEl.style.width = measure(roleWordEl.textContent) + 'px';
+    });
+  }
 }
 
 /* ---------------- project expand/collapse ---------------- */
@@ -508,6 +613,25 @@ document.querySelectorAll('.project-card[data-expanded]').forEach((card) => {
     btn.textContent = expanded ? 'see more' : 'close';
   });
 });
+
+/* ---------------- cursor-following spotlight on project cards ----------------
+   Each card gets --mx/--my updated on pointermove; a subtle radial glow
+   follows the cursor inside the card (pointer:fine only, see CSS). */
+const projectCards = document.querySelectorAll('.project-card');
+if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches && projectCards.length) {
+  projectCards.forEach((card) => {
+    let raf = null;
+    card.addEventListener('pointermove', (e) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(2) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(2) + '%');
+        raf = null;
+      });
+    });
+  });
+}
 
 /* ---------------- reveal on scroll ---------------- */
 const revealEls = document.querySelectorAll('.reveal, [data-reveal-group]');
@@ -546,27 +670,112 @@ if (progressBar && !prefersReducedMotion) {
   updateProgress();
 }
 
-/* ---------------- scroll dots active state ---------------- */
+/* ---------------- scroll dots + topnav scroll-spy ----------------
+   Sections are taller than the viewport, so a threshold-based observer
+   never fires for them. Instead, pick the section whose top is closest to
+   the viewport's focal point (a bit below the sticky topbar) on scroll. */
 const sections = ['top', 'about', 'projects', 'contact']
   .map((id) => document.getElementById(id))
   .filter(Boolean);
 const dots = document.querySelectorAll('.scroll-dots .dot');
+const topnavLinks = document.querySelectorAll('.topnav a[href^="index.html#"], .topnav a[href^="#"]');
 
-if ('IntersectionObserver' in window && dots.length) {
-  const dotObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          dots.forEach((d) => d.classList.toggle('is-active', d.dataset.section === id));
-        }
-      });
-    },
-    { threshold: 0.5 }
-  );
-  sections.forEach((s) => dotObserver.observe(s));
+function updateActiveSection() {
+  const focalY = window.scrollY + window.innerHeight * 0.35;
+  let currentId = sections.length ? sections[0].id : null;
+  // check sections in document order, keep the last one whose top we've passed
+  for (const s of sections) {
+    const top = s.getBoundingClientRect().top + window.scrollY;
+    if (top <= focalY) currentId = s.id;
+  }
+  // at the very bottom of the page, force the contact section active
+  const doc = document.documentElement;
+  if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+    currentId = 'contact';
+  }
+  dots.forEach((d) => d.classList.toggle('is-active', d.dataset.section === currentId));
+  topnavLinks.forEach((a) => {
+    const hash = a.hash.replace(/^#/, '');
+    a.classList.toggle('is-current', hash === currentId && a.pathname === window.location.pathname);
+  });
+}
+
+// only spy on pages that actually have the index sections (playground has none,
+// its current-page link is hardcoded with .is-current)
+// runs directly in the handler (no rAF gate): it's a few rect reads and some
+// class toggles, cheap enough, and can't starve if frames are throttled
+if (sections.length) {
+  window.addEventListener('scroll', updateActiveSection, { passive: true });
+  window.addEventListener('resize', updateActiveSection);
+  updateActiveSection();
 }
 
 /* ---------------- footer year ---------------- */
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+/* ---------------- konami code easter egg ---------------- */
+/* ↑ ↑ ↓ ↓ ← → ← → B A — spawns a burst of accent sparks + a toast.
+   Pure DOM, honors reduced motion, self-cleans its listeners. */
+(function konami() {
+  const SEQUENCE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let pos = 0;
+  // keydown events carry no pointer coords — track the last pointer position
+  // so the spark burst appears where the user actually is
+  let lastX = null;
+  let lastY = null;
+  document.addEventListener('pointermove', (e) => {
+    lastX = e.clientX;
+    lastY = e.clientY;
+  }, { passive: true });
+
+  document.addEventListener('keydown', (e) => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === SEQUENCE[pos]) {
+      pos++;
+      if (pos === SEQUENCE.length) {
+        pos = 0;
+        triggerKonami();
+      }
+    } else {
+      // allow a restarted sequence to begin with the same key that broke it
+      pos = key === SEQUENCE[0] ? 1 : 0;
+    }
+  });
+
+  function triggerKonami() {
+    if (document.getElementById('konamiToast')) return; // one at a time
+    const x = (lastX !== null) ? lastX : window.innerWidth / 2;
+    const y = (lastY !== null) ? lastY : window.innerHeight / 2;
+    if (!prefersReducedMotion) spawnSparks(x, y);
+    showToast('// achievement unlocked: the konami code works on portfolios too');
+  }
+
+  function spawnSparks(x, y) {
+    const COUNT = 16;
+    for (let i = 0; i < COUNT; i++) {
+      const s = document.createElement('span');
+      s.className = 'konami-spark';
+      const angle = (Math.PI * 2 * i) / COUNT + Math.random() * 0.4;
+      const dist = 70 + Math.random() * 110;
+      s.style.setProperty('--dx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+      s.style.setProperty('--dy', (Math.sin(angle) * dist - 40).toFixed(1) + 'px');
+      s.style.left = x + 'px';
+      s.style.top = y + 'px';
+      s.style.animationDelay = (Math.random() * 0.12) + 's';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1100);
+    }
+  }
+
+  function showToast(text) {
+    const toast = document.createElement('div');
+    toast.className = 'konami-toast';
+    toast.id = 'konamiToast';
+    toast.setAttribute('role', 'status');
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('is-leaving'), 3600);
+    setTimeout(() => toast.remove(), 4100);
+  }
+})();

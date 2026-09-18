@@ -6,6 +6,7 @@
   --accent: #E8A33D;
   --sage: #7C9885;
   --border: #262B24;
+  --border-hover: #3A4136;
 
   --mono: 'JetBrains Mono', ui-monospace, monospace;
   --sans: 'IBM Plex Sans', system-ui, sans-serif;
@@ -19,6 +20,7 @@
   --accent: #C6821F;
   --sage: #4F6B57;
   --border: #DDD8CC;
+  --border-hover: #B9B2A0;
 }
 
 [data-theme="light"] .grain {
@@ -108,9 +110,11 @@ a { color: inherit; text-decoration: none; }
 
 .social-icon:hover { transform: translateY(-4px); }
 
+/* bob uses the independent 'translate' property so the hover lift (transform)
+   can still transition smoothly while the animation runs */
 @keyframes icon-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -14px; }
 }
 
 /* click ripple that follows the cursor when icons jump between states */
@@ -342,7 +346,17 @@ a { color: inherit; text-decoration: none; }
   padding: 20px 32px;
   background: linear-gradient(to bottom, var(--bg) 70%, transparent);
   backdrop-filter: blur(6px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* once the page scrolls, the bar gets a real edge so content passes "under" it */
+.topbar.is-scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme="light"] .topbar.is-scrolled { box-shadow: 0 8px 24px rgba(26, 27, 23, 0.07); }
 
 .logo {
   font-family: var(--mono);
@@ -673,11 +687,26 @@ a { color: inherit; text-decoration: none; }
   margin: 0 0 18px;
 }
 
+/* width is animated from JS so the line doesn't jump between role lengths.
+   --measure copy is hidden and used to measure text width off-screen. */
 .role-word {
   display: inline-block;
   color: var(--accent);
   border-bottom: 1px solid var(--accent);
   padding-bottom: 2px;
+  white-space: nowrap;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  vertical-align: bottom;
+}
+
+.role-word--measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  border-bottom: none;
+  transition: none;
 }
 
 .role-word.is-swapping {
@@ -790,6 +819,60 @@ a { color: inherit; text-decoration: none; }
   100% { transform: scaleY(0.3); transform-origin: top; opacity: 0.4; }
 }
 
+/* ---------- hero cascade on load ---------- */
+/* everything but the hero name rises in right after the intro finishes (the
+   name itself must stay put so the flying loader title can land on it and
+   hand over seamlessly). sequenced by body.is-loaded. */
+.js .hero .prompt-line,
+.js .hero .hero-role,
+.js .hero .hero-tagline,
+.js .hero .scroll-cue {
+  opacity: 0;
+  /* pure-CSS failsafe: if body.is-loaded never lands (script failed, etc.),
+     reveal anyway after 5s instead of hiding the hero forever */
+  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 5s backwards;
+}
+
+.js body.is-loaded .hero .prompt-line,
+.js body.is-loaded .hero .hero-role,
+.js body.is-loaded .hero .hero-tagline,
+.js body.is-loaded .hero .scroll-cue {
+  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  opacity: 1;
+}
+
+.js body.is-loaded .hero .prompt-line { animation-delay: 0.05s; }
+.js body.is-loaded .hero .hero-role { animation-delay: 0.24s; }
+.js body.is-loaded .hero .hero-tagline { animation-delay: 0.34s; }
+.js body.is-loaded .hero .scroll-cue { animation-delay: 0.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .hero .prompt-line,
+  .js .hero .hero-role,
+  .js .hero .hero-tagline,
+  .js .hero .scroll-cue { opacity: 1 !important; animation: none !important; }
+}
+
+/* ---------- section head line draw ---------- */
+/* the rule after each section heading draws itself in when the section reveals */
+.section-head::after {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.reveal.is-visible .section-head::after,
+[data-reveal-group].is-visible .section-head::after {
+  transform: scaleX(1);
+}
+
+/* if scripts never ran, don't hide the rule behind the reveal state */
+html:not(.js) .section-head::after { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .section-head::after { transform: none !important; transition: none !important; }
+}
+
 /* ---------- reveal on scroll ---------- */
 .reveal {
   opacity: 0;
@@ -835,6 +918,11 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 }
 
 /* ---------- shared section styles ---------- */
+/* anchor targets clear the sticky topbar when jumped to */
+section[id] {
+  scroll-margin-top: 84px;
+}
+
 section {
   max-width: 860px;
   margin: 0 auto;
@@ -906,7 +994,7 @@ section {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.status-card:hover { border-color: #3a4136; }
+.status-card:hover { border-color: var(--border-hover); }
 
 .status-label {
   font-family: var(--mono);
@@ -977,7 +1065,10 @@ section {
   gap: 18px;
 }
 
+/* hover border uses the theme var so light mode gets a visible border too;
+   a --mx/--my spotlight follows the cursor inside the card (fine pointers) */
 .project-card {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 28px;
@@ -985,8 +1076,25 @@ section {
   transition: border-color 0.2s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.project-card:hover { 
-  border-color: #3a4136; 
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(232, 163, 61, 0.09), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+[data-theme="light"] .project-card::before {
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(198, 130, 31, 0.08), transparent 65%);
+}
+
+.project-card:hover::before { opacity: 1; }
+
+.project-card:hover {
+  border-color: var(--border-hover);
   transform: translateY(-3px); 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
@@ -1055,7 +1163,7 @@ section {
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.project-card:hover .project-tags span { color: var(--sage); border-color: #3a4136; }
+.project-card:hover .project-tags span { color: var(--sage); border-color: var(--border-hover); }
 
 .expand-btn {
   background: none;
@@ -1154,7 +1262,7 @@ section {
 }
 
 .contact-form input:hover,
-.contact-form textarea:hover { border-color: #3a4136; }
+.contact-form textarea:hover { border-color: var(--border-hover); }
 
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
@@ -1223,6 +1331,27 @@ section {
   min-height: 1em;
 }
 
+/* honeypot spam trap — visually and programmatically hidden from humans,
+   only bots that auto-fill every field will trip it */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* button itself confirms a successful send: border + text go sage */
+.contact-cta.is-success {
+  background: var(--sage);
+  border-color: var(--sage);
+}
+
+.contact-cta.is-success:hover {
+  box-shadow: 0 0 0 1px var(--sage), 0 0 14px 2px rgba(124, 152, 133, 0.4);
+}
+
 .contact-form-status.is-success { color: var(--sage); animation: status-in 0.4s ease; }
 .contact-form-status.is-error { color: #d9736a; animation: status-in 0.4s ease; }
 
@@ -1263,6 +1392,10 @@ section {
   .status-card { position: static; }
   .project-main { flex-direction: column; }
   .contact-form-row { grid-template-columns: 1fr; }
+  /* iOS zooms the viewport when focusing inputs smaller than 16px */
+  .contact-form input,
+  .contact-form textarea,
+  .terminal-input { font-size: 16px; }
 }
 
 /* .social-icon visibility on mobile/touch is handled in script.js —
@@ -1401,6 +1534,10 @@ button:focus-visible {
 .terminal-output .out-cmd::before { content: "roen@ntu:~/playground$ "; color: var(--sage); }
 .terminal-output .out-accent { color: var(--accent); }
 .terminal-output .out-error { color: #d9736c; }
+.terminal-output .out-dim { color: var(--text-dim); opacity: 0.85; }
+
+/* clear suppresses the per-line entrance so old lines don't replay */
+.terminal-output.is-clearing p { animation: none !important; }
 
 .terminal-input-row {
   display: flex;
@@ -1429,6 +1566,14 @@ button:focus-visible {
   font-size: 12px;
   color: var(--text-dim);
 }
+
+.terminal-hint--keys {
+  margin-top: 8px;
+  opacity: 0.75;
+  font-size: 11px;
+}
+
+.terminal-hint--keys span { color: var(--text-dim); }
 
 /* input caret blinks in accent color */
 .terminal-input { caret-color: var(--accent); }
@@ -1503,7 +1648,12 @@ button:focus-visible {
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.bubble-meter-fill.is-low { background: #d9736c; }
+.bubble-meter-fill.is-low { background: #d9736c; animation: meter-low 0.9s ease-in-out infinite; }
+
+@keyframes meter-low {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
 
 .bubble-total {
   position: fixed;
@@ -1551,10 +1701,10 @@ button:focus-visible {
 
 .bubble-pool-label {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-dim);
   text-align: center;
-  max-width: 80px;
+  max-width: 84px;
 }
 
 .bubble {
@@ -1573,11 +1723,25 @@ button:focus-visible {
   100% { transform: translate(var(--driftX), -160px) scale(0.9); opacity: 0; }
 }
 
+/* reduced motion: bubbles hold still until popped instead of drifting up */
+.bubble.is-still { animation: none; opacity: 0.95; }
+
 .bubble.is-popping {
   animation: none !important;
   transform: scale(1.5) !important;
   opacity: 0 !important;
   transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+/* the one bubble that doesn't pop: it wraps the milestone text */
+.bubble-wrap {
+  position: relative;
+  animation: milestoneFloat 3s ease-in-out infinite;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble-wrap { animation: none; }
 }
 
 .bubble-milestone {
@@ -1600,8 +1764,30 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  animation: milestoneFloat 3s ease-in-out infinite;
 }
+
+/* gentle pop-in each time the milestone shows (retriggered via .is-entering) */
+.bubble-milestone-inner.is-entering {
+  animation: milestone-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes milestone-in {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.bubble-milestone-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.bubble-milestone-backdrop:focus-visible { outline: none; }
 
 @keyframes milestoneFloat {
   0%, 100% { transform: translateY(0); }
@@ -1628,4 +1814,59 @@ button:focus-visible {
 
 @media (max-width: 640px) {
   .bubble-wand, .bubble-meter, .bubble-total, .bubble-pool { display: none !important; }
+}
+
+/* ---------- konami easter egg ---------- */
+.konami-spark {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px 1px var(--accent);
+  pointer-events: none;
+  z-index: 1400;
+  animation: konami-spark 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes konami-spark {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), var(--dy, -80px)) scale(0.3); opacity: 0; }
+}
+
+.konami-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  z-index: 1400;
+  max-width: min(90vw, 520px);
+  background: var(--bg-raised);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 12px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  text-align: center;
+  animation: konami-toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.konami-toast.is-leaving {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+@keyframes konami-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .konami-spark { display: none; }
+  .konami-toast { animation: none; }
+  .bubble-milestone-inner.is-entering { animation: none; }
+  .bubble-meter-fill.is-low { animation: none; }
+  .topbar { transition: none; }
 }

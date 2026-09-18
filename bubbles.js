@@ -9,6 +9,7 @@
   const pool = document.getElementById('bubblePool');
   const milestone = document.getElementById('bubbleMilestone');
   const milestoneBubble = document.getElementById('bubbleMilestoneBubble');
+  const milestoneBackdrop = document.getElementById('bubbleMilestoneBackdrop');
   const milestoneNum = document.getElementById('bubbleMilestoneNum');
 
   if (!toggleBtn) return;
@@ -17,6 +18,9 @@
   const REFILL_AMOUNT = 20;
   const MAX_ON_SCREEN = 45;
   const MILESTONE_STEP = 10;
+
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let active = false;
   let resource = MAX_RESOURCE;
@@ -31,6 +35,9 @@
   let audioCtx = null;
   function getCtx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // browsers suspend audio contexts until a user gesture — the toggle click
+    // and every pop are gestures, so resume opportunistically here
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
   }
 
@@ -95,6 +102,8 @@
     el.style.setProperty('--driftX', drift + 'px');
     const duration = 2.4 + Math.random() * 1.6;
     el.style.animationDuration = duration + 's';
+    // reduced motion: no rise/fade loop, the bubble just holds still until popped
+    if (reducedMotion) el.classList.add('is-still');
 
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -104,16 +113,19 @@
     document.body.appendChild(el);
     onScreen++;
 
-    setTimeout(() => {
-      if (el.parentNode && !el.classList.contains('is-popping')) {
-        el.remove();
-        onScreen--;
-      }
-    }, duration * 1000 + 50);
+    // only schedule the lifetime removal when the bubble actually animates away
+    if (!reducedMotion) {
+      setTimeout(() => {
+        if (el.parentNode && !el.classList.contains('is-popping')) {
+          el.remove();
+          onScreen--;
+        }
+      }, duration * 1000 + 50);
+    }
   }
 
   function popBubble(el) {
-    if (el.classList.contains('is-popping')) return;
+    if (el.classList.contains('is-popping') || el.classList.contains('is-still-popped')) return;
     el.classList.add('is-popping');
     playPop(false);
     totalPopped++;
@@ -133,27 +145,57 @@
   function showMilestone(count) {
     milestoneNum.textContent = count;
     milestone.style.display = 'flex';
+    // retrigger the entrance animation each time
+    milestoneBubble.classList.remove('is-popping', 'is-entering');
+    void milestoneBubble.offsetWidth;
+    milestoneBubble.classList.add('is-entering');
+  }
+
+  function hideMilestone() {
+    milestone.style.display = 'none';
+    milestoneBubble.classList.remove('is-popping', 'is-entering');
   }
 
   milestoneBubble.addEventListener('click', () => {
     playPop(true);
     milestoneBubble.classList.add('is-popping');
-    setTimeout(() => {
-      milestone.style.display = 'none';
-      milestoneBubble.classList.remove('is-popping');
-    }, 260);
+    setTimeout(hideMilestone, 260);
   });
 
+  // backdrop button dismisses without popping the bubble
+  if (milestoneBackdrop) {
+    milestoneBackdrop.addEventListener('click', hideMilestone);
+  }
+
   /* ---------- wand tracking + spawn-on-move ---------- */
-  function onMouseMove(e) {
-    wand.style.transform = `translate(${e.clientX - 8}px, ${e.clientY - 30}px)`;
+  function spawnFromPointer(x, y) {
     const now = performance.now();
     if (resource > 0 && now - lastSpawn > 90) {
       lastSpawn = now;
       resource -= 1;
-      spawnBubble(e.clientX, e.clientY - 10);
+      spawnBubble(x, y - 10);
       updateMeter();
     }
+  }
+
+  function onMouseMove(e) {
+    wand.style.transform = `translate(${e.clientX - 8}px, ${e.clientY - 30}px)`;
+    spawnFromPointer(e.clientX, e.clientY);
+  }
+
+  function onTouchMove(e) {
+    const t = e.touches[0];
+    if (!t) return;
+    spawnFromPointer(t.clientX, t.clientY);
+    // don't let bubble spawning fight the page scroll on touch
+    if (resource > 0) e.preventDefault();
+  }
+
+  function onTouchStart(e) {
+    const t = e.touches[0];
+    if (!t) return;
+    // no wand cursor on touch — the tap position is enough
+    spawnFromPointer(t.clientX, t.clientY);
   }
 
   function onScroll() {
@@ -186,11 +228,21 @@
   }
 
   /* ---------- pool refill ---------- */
-  pool.addEventListener('dblclick', () => {
+  function refill() {
     resource = Math.min(MAX_RESOURCE, resource + REFILL_AMOUNT);
     updateMeter();
     playRefill();
-  });
+  }
+
+  pool.addEventListener('dblclick', refill);
+
+  // single tap refills too on touch devices — dblclick is unreliable there
+  if (isTouch) {
+    pool.addEventListener('click', (e) => {
+      e.stopPropagation();
+      refill();
+    });
+  }
 
   /* ---------- activate / deactivate ---------- */
   function activate() {
@@ -201,9 +253,15 @@
     totalEl.style.display = 'block';
     pool.style.display = 'flex';
     toggleBtn.textContent = '🫧 deactivate bubble wand';
+    toggleBtn.setAttribute('aria-pressed', 'true');
     updateMeter();
-    window.addEventListener('mousemove', onMouseMove);
+    getCtx(); // unlock audio inside the user gesture
+    if (!isTouch) window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('scroll', onScroll, { passive: true });
+    if (isTouch) {
+      window.addEventListener('touchstart', onTouchStart, { passive: false });
+      window.addEventListener('touchmove', onTouchMove, { passive: false });
+    }
     document.addEventListener('click', onDocumentClick);
   }
 
@@ -215,8 +273,13 @@
     totalEl.style.display = 'none';
     pool.style.display = 'none';
     toggleBtn.textContent = '🫧 activate bubble wand';
-    window.removeEventListener('mousemove', onMouseMove);
+    toggleBtn.setAttribute('aria-pressed', 'false');
+    if (!isTouch) window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('scroll', onScroll);
+    if (isTouch) {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+    }
     document.removeEventListener('click', onDocumentClick);
   }
 
