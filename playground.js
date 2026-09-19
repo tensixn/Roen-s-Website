@@ -48,6 +48,12 @@ const commands = {
   theme      flip light/dark, or pass 'light' / 'dark'
   echo       repeat what you say back
   history    show recent commands
+  roll       roll a die (try: roll 2d20)
+  flip       flip a coin
+  fortune    crack a fortune cookie
+  rps        play rock paper scissors
+  matrix     fall into the code rain
+  weather    check the weather on roenOS
   sudo       try it
   clear      clear the terminal`,
 
@@ -67,6 +73,120 @@ const commands = {
 
   sudo: () =>
     `nice try. permission denied: you are not in the sudoers file.\nthis incident will not be reported, i'm not that serious.`,
+
+  roll: (arg) => {
+    // dice notation: NdM (e.g. 2d6, d20). falls back to one d6.
+    const m = /^((\d{1,2})?d(\d{1,3}))$/i.exec((arg || '').replace(/\s+/g, ''));
+    let count = 1, sides = 6;
+    if (m) {
+      count = m[2] ? Math.min(10, parseInt(m[2], 10)) : 1;
+      sides = Math.max(2, Math.min(1000, parseInt(m[3], 10)));
+    } else if (arg) {
+      return `roll: can't parse "${escapeHtml(arg)}" — dice notation is NdM, like 2d6 or d20.`;
+    }
+    const rolls = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * sides));
+    const total = rolls.reduce((a, b) => a + b, 0);
+    const detail = count > 1 ? ` [${rolls.join(', ')}]` : '';
+    return `🎲 d${sides} rolled${detail}: <span class="out-accent">${total}</span>`;
+  },
+
+  flip: () => {
+    const heads = Math.random() < 0.5;
+    return heads
+      ? '🪙 heads. the coin has spoken.'
+      : '🪙 tails. better luck next flip.';
+  },
+
+  fortune: () => {
+    const fortunes = [
+      'a shipped prototype beats a perfect plan. ship the thing.',
+      'the bug you cannot find lives in the code you did not write.',
+      'soon you will refactor something. it will feel amazing. mostly.',
+      'someone is quietly learning from your work. keep building.',
+      'the tab you closed yesterday had the answer. it is gone now.',
+      'coffee first, semicolons after.',
+      'your next merge conflict is a chance to read someone else\'s code.',
+      'the documentation you write today saves you at 2am next month.',
+      'a watched test never passes. go touch grass, it will be green when you return.',
+      'lucky numbers are just constants someone forgot to name.',
+    ];
+    const f = fortunes[Math.floor(Math.random() * fortunes.length)];
+    return `🥠 ${f}\n${'~'.repeat(Math.min(46, f.length))}`;
+  },
+
+  rps: (arg) => {
+    const moves = ['rock', 'paper', 'scissors'];
+    const beats = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+    const pick = (arg || '').toLowerCase();
+    if (!moves.includes(pick)) {
+      return 'usage: rps <rock|paper|scissors> — choose your weapon.';
+    }
+    const cpu = moves[Math.floor(Math.random() * 3)];
+    const line = `you: ${pick} · me: ${cpu} — `;
+    if (pick === cpu) return line + 'draw. great minds.';
+    if (beats[pick] === cpu) return line + 'you win. suspicious luck.';
+    return line + 'i win. the machine rises.';
+  },
+
+  matrix: () => {
+    if (document.getElementById('matrixCanvas')) return null;
+    const canvas = document.createElement('canvas');
+    canvas.id = 'matrixCanvas';
+    canvas.className = 'matrix-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    const ctx = canvas.getContext('2d');
+    const chars = 'アイウエオカキクケコサシスセソ0123456789<>/{}[]$#'.split('');
+    let drops = [];
+    let timer = null;
+
+    function fit() {
+      const wrap = canvas.closest('.terminal-wrap');
+      canvas.width = wrap ? wrap.clientWidth : 600;
+      canvas.height = 240;
+      drops = Array.from({ length: Math.floor(canvas.width / 16) }, () =>
+        Math.floor(Math.random() * (canvas.height / 16)));
+    }
+    fit();
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(15, 18, 16, 0.08)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = '14px JetBrains Mono, monospace';
+      drops.forEach((y, i) => {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillStyle = Math.random() < 0.06 ? '#F4F1EA' : '#7C9885';
+        ctx.fillText(ch, i * 16, y * 16);
+        drops[i] = y * 16 > canvas.height && Math.random() > 0.975 ? 0 : y + 1;
+      });
+    };
+    timer = setInterval(draw, 50);
+
+    const stop = () => {
+      clearInterval(timer);
+      canvas.remove();
+      document.removeEventListener('keydown', onKey, true);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') stop(); };
+    document.addEventListener('keydown', onKey, true);
+    setTimeout(stop, 8000);
+
+    const wrap = canvas.closest('.terminal-wrap');
+    if (wrap) wrap.appendChild(canvas);
+    return null;
+  },
+
+  weather: () => {
+    const states = [
+      { icon: '☀️', desc: 'clear skies over the NTU campus' },
+      { icon: '⛅', desc: 'partly cloudy, mild 29°C' },
+      { icon: '🌧️', desc: 'raining — the library is winning' },
+      { icon: '⛈️', desc: 'thunderstorm, commit early commit often' },
+      { icon: '🌫️', desc: 'hazy — even the bugs are hard to see' },
+      { icon: '☕', desc: 'caffeine front moving in from the kitchen' },
+    ];
+    const s = states[Math.floor(Math.random() * states.length)];
+    return `${s.icon} roenOS weather — ${s.desc}`;
+  },
 
   date: () => new Date().toString(),
 

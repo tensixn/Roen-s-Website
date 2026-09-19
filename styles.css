@@ -1816,6 +1816,18 @@ button:focus-visible {
   .bubble-wand, .bubble-meter, .bubble-total, .bubble-pool { display: none !important; }
 }
 
+/* ---------- terminal matrix command ---------- */
+.matrix-canvas {
+  display: block;
+  width: 100%;
+  height: 240px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  pointer-events: none;
+}
+
 /* ---------- konami easter egg ---------- */
 .konami-spark {
   position: fixed;
