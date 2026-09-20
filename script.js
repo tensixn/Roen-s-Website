@@ -8,10 +8,11 @@ const themeToggle = document.getElementById('themeToggle');
 function setTheme(mode) {
   if (mode === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
-    localStorage.setItem('roen_theme', 'light');
+    // persist, but don't crash when storage is blocked (private mode etc.)
+    try { localStorage.setItem('roen_theme', 'light'); } catch (e) { /* blocked */ }
   } else {
     document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('roen_theme', 'dark');
+    try { localStorage.setItem('roen_theme', 'dark'); } catch (e) { /* blocked */ }
   }
   updateThemeToggleState();
   // let other pages/scripts react (the terminal prints the new mode)

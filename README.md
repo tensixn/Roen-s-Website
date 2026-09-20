@@ -16,21 +16,21 @@ npx http-server -p 3000
 - `index.html` — main site (hero, about, projects, contact)
 - `playground.html` — interactive terminal + bubble wand toy
 
-## Contact form setup
+## Contact form
 
-The form uses [Formspree](https://formspree.io) as its backend. The free plan gives 50 submissions/month.
+The form uses [Formspree](https://formspree.io) as its backend (free plan: 50 submissions/month). It's already wired up — `index.html` posts to the real endpoint:
 
-1. Create a [Formspree](https://formspree.io) account and add a new form with your email (`neorwoes@gmail.com`).
-2. Copy the form ID from the generated endpoint — it looks like `https://formspree.io/f/abcdwxyz`, where `abcdwxyz` is the ID.
-3. In `index.html`, replace `YOUR_FORM_ID` in the contact form's `action`:
+```html
+<form id="contactForm" class="contact-form" action="https://formspree.io/f/mgavvrro" method="POST">
+```
 
-   ```html
-   <form id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-   ```
+If it ever needs re-pointing (new email, new Formspree account):
 
-4. Confirm your email address via the verification mail Formspree sends, or deliveries will be silently dropped.
+1. Create a [Formspree](https://formspree.io) form with your email.
+2. Swap the form ID into the `action` above — the ID is the last part of the endpoint (`https://formspree.io/f/abcdwxyz` → `abcdwxyz`).
+3. Confirm your email address via the verification mail Formspree sends, or deliveries will be silently dropped.
 
-Until the real ID is in place, submitting the form shows a "form isn't wired up yet" notice instead of a cryptic error.
+`script.js` still checks the endpoint for placeholder IDs (`YOUR_FORM_ID`, `FORM_ID`, `XXXXXXX`) — if the real ID ever goes missing, submitting shows a "form isn't wired up yet" notice instead of a cryptic error.
 
 ## Notes
 

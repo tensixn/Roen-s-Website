@@ -267,10 +267,10 @@ resume.pdf  spire.save     secrets/`,
     } else {
       if (arg === 'light' || (arg === undefined && !isLight)) {
         document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('roen_theme', 'light');
+        try { localStorage.setItem('roen_theme', 'light'); } catch (e) { /* blocked */ }
       } else {
         document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('roen_theme', 'dark');
+        try { localStorage.setItem('roen_theme', 'dark'); } catch (e) { /* blocked */ }
       }
     }
     const mode = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';

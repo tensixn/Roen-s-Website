@@ -5,28 +5,31 @@
 <script>
   document.documentElement.classList.add('js');
   (function() {
-    if (localStorage.getItem('roen_theme') === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
+    // storage can be blocked (private mode, hardened settings); default dark is fine then
+    try {
+      if (localStorage.getItem('roen_theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) { /* blocked — stay on the default theme */ }
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
 <title>roen · CS @ NTU</title>
-<meta name="description" content="Roen, computer science student at NTU. Building small useful things, heading toward software engineering.">
+<meta name="description" content="Roen, computer science student at NTU. Building Telegram bots and campus apps, heading toward software engineering.">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://roennn.vercel.app/">
 <meta property="og:title" content="roen — CS @ NTU">
-<meta property="og:description" content="Computer science student at NTU. Building small useful things, heading toward software engineering.">
+<meta property="og:description" content="Computer science student at NTU. Building Telegram bots and campus apps, heading toward software engineering.">
 <meta property="og:image" content="https://roennn.vercel.app/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="roen — CS @ NTU">
-<meta name="twitter:description" content="Computer science student at NTU. Building small useful things, heading toward software engineering.">
+<meta name="twitter:description" content="Computer science student at NTU. Building Telegram bots and campus apps, heading toward software engineering.">
 <meta name="twitter:image" content="https://roennn.vercel.app/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -114,7 +117,7 @@
       </p>
       <h1 class="hero-name" id="heroHeading">hello, i'm <span id="heroNameTarget">roen</span>!</h1>
       <p class="hero-role">i'm a <span class="role-word" id="roleWord">cs student</span></p>
-      <p class="hero-tagline">Building small but useful things at NTU and working towards my goal of being a Software Engineer.</p>
+      <p class="hero-tagline">I build Telegram bots and campus apps at NTU, working towards my goal of being a Software Engineer.</p>
       <div class="hero-links">
         <a href="#projects" class="btn btn-primary">see the work</a>
         <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="btn btn-ghost">github ↗</a>
@@ -190,6 +193,7 @@
           <div class="project-info">
             <h3>Roen's Website</h3>
             <p class="project-desc">The site you are currently on. Built to introduce myself, show what I've been working on, and give people a real place to find my projects instead of a scattered GitHub profile.</p>
+            <p class="project-outcome"><span aria-hidden="true">→ </span>No framework, no template — every line is handwritten and has a reason behind it.</p>
             <div class="project-tags">
               <span>html</span>
               <span>css</span>
@@ -213,6 +217,7 @@
           <div class="project-info">
             <h3>NTU Sports Matching App</h3>
             <p class="project-desc">A React Native app that helps NTU students find, host, and join pickup sports games on campus in seconds. Built with Expo, with a full light and dark theming system running through the whole app.</p>
+            <p class="project-outcome"><span aria-hidden="true">→ </span>Turns the group-chat scroll into browse-and-join: open games, who's in, one tap.</p>
             <div class="project-tags">
               <span>react native</span>
               <span>expo</span>
@@ -236,6 +241,7 @@
           <div class="project-info">
             <h3>Page Summarizer</h3>
             <p class="project-desc">A Chrome extension that summarizes whatever webpage you're currently browsing using AI, built with a small team in a single hackathon sprint.</p>
+            <p class="project-outcome"><span aria-hidden="true">→ </span>Summarizes the page you're already on — no tab-switching or copy-pasting into a chatbot.</p>
             <div class="project-tags">
               <span>chrome extension</span>
               <span>javascript</span>
@@ -258,6 +264,7 @@
           <div class="project-info">
             <h3>Turn-Based Combat</h3>
             <p class="project-desc">A turn-based combat game built in Java for my OOP module, built with a team of four applying SOLID principles and proper design patterns instead of just making it work.</p>
+            <p class="project-outcome"><span aria-hidden="true">→ </span>The architecture was the deliverable: SOLID and design patterns clean enough for four people to build in parallel.</p>
             <div class="project-tags">
               <span>java</span>
               <span>oop</span>
@@ -280,6 +287,7 @@
           <div class="project-info">
             <h3>Stoxed</h3>
             <p class="project-desc">A Telegram bot for tracking stocks and crypto, with price lookups, AI-powered predictions, watchlists, and portfolio tracking, right from a chat window. Search @StoxedBot on Telegram.</p>
+            <p class="project-outcome"><span aria-hidden="true">→ </span>Live on Railway — prices, watchlists and P&L in the chat app already open, no app-switching.</p>
             <div class="project-tags">
               <span>node</span>
               <span>telegraf</span>

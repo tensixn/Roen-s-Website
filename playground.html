@@ -5,9 +5,12 @@
 <script>
   document.documentElement.classList.add('js');
   (function() {
-    if (localStorage.getItem('roen_theme') === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
+    // storage can be blocked (private mode, hardened settings); default dark is fine then
+    try {
+      if (localStorage.getItem('roen_theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (e) { /* blocked — stay on the default theme */ }
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
