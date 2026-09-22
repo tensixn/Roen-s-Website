@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "shaders": "^3.2.470"
+  }
+}

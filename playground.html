@@ -108,6 +108,33 @@
     <p class="bubble-intro">A cursor that blows bubbles. Move around, scroll, click things, your liquid runs out eventually, dip the wand in the pool to refill. Pop 10 and something happens.</p>
     <button class="btn btn-primary" id="bubbleToggle" type="button" aria-pressed="false">🫧 activate bubble wand</button>
   </div>
+
+  <div class="shader-section">
+    <div class="section-head">
+      <h2>shader demo</h2>
+    </div>
+    <p class="shader-intro">A WebGPU shader — "Sapphire Glow Up" — rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it — the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+). The free preview adds a small watermark.</p>
+    <div class="shader-frame">
+      <div class="terminal-bar">
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-title">webgpu · sapphire glow up</span>
+      </div>
+      <div class="shader-canvas-wrap">
+        <canvas id="shaderCanvas" role="img" aria-label="Sapphire Glow Up WebGPU shader preview"></canvas>
+        <div class="shader-fallback" id="shaderFallback" hidden>
+          <p>webgpu unavailable — this demo needs Chrome / Edge 113+, or Safari 18+.</p>
+        </div>
+      </div>
+      <div class="shader-controls" id="shaderControls" hidden>
+        <!-- sliders + swatches injected by shader-demo.js -->
+        <button class="shader-random" id="shaderRandom" type="button">🎲 randomize</button>
+        <button class="shader-reset" id="shaderReset" type="button">reset</button>
+      </div>
+    </div>
+    <p class="shader-status" id="shaderStatus" aria-live="polite">initializing webgpu…</p>
+  </div>
 </main>
 
 <!-- bubble wand UI, hidden until activated -->
@@ -150,6 +177,15 @@
 <script src="script.js"></script>
 <script src="playground.js"></script>
 <script src="bubbles.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "shaders/js": "https://cdn.jsdelivr.net/npm/shaders@3.2.470/dist/js/bundle.js"
+  }
+}
+</script>
+<script type="module" src="shader-demo.js"></script>
 
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
