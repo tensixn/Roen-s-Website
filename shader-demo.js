@@ -223,7 +223,69 @@ function buildControls(preview) {
   };
 }
 
+// the free shaders.com tier injects an upsell link ("Unlock your Shaders Pro
+// license") into the canvas container — pull it out, and keep it out in case
+// the bundle re-adds one. it may live in a shadow root, so check those too.
+function stripLicenseBadge(canvas) {
+  const scope = () => {
+    document.querySelectorAll('a[href*="shaders.com/dashboard?pricing"]').forEach((el) => el.remove());
+    for (const root of [canvas.parentElement, canvas]) {
+      if (root && root.shadowRoot) {
+        root.shadowRoot.querySelectorAll('a[href*="shaders.com/dashboard?pricing"]').forEach((el) => el.remove());
+      }
+    }
+  };
+  scope();
+  if (canvas.parentElement) {
+    new MutationObserver(scope).observe(canvas.parentElement, { childList: true, subtree: true });
+  }
+}
+
+let failurePoll = null;
+let initWatchdog = null;
+let lastSeenReason = null;
+
+// terminal failure reasons from the shaders package (ShaderOptions.onError
+// docs), mapped to visitor-friendly text. createPreview doesn't expose onError,
+// so late failures are surfaced by polling preview.getFailureReason().
+const FAILURE_TEXT = {
+  'unsupported': 'webgpu is unavailable in this browser.',
+  'no-adapter': 'no webgpu adapter is available on this device.',
+  'no-device': 'the webgpu device request failed.',
+  'init-failed': 'the shader failed to initialize.',
+  'timeout': 'the shader took too long to start — slow network or busy gpu.',
+  'device-lost': 'the webgpu device was lost and could not recover.',
+  'out-of-memory': 'the gpu ran out of memory for this shader.',
+  'gpu-error': 'the gpu reported sustained errors.',
+  'render-failed': 'the shader kept failing while drawing.',
+  'limit-exceeded': 'this shader needs more gpu resources than this device allows.',
+  'unrecoverable': 'the webgpu device was lost too many times.',
+  'rebuild_failed': 'the shader could not recover after a device loss.',
+};
+
+function showFailure(reason, log) {
+  clearInterval(failurePoll);
+  clearTimeout(initWatchdog);
+  if (log) console.error('[shader-demo]', log);
+  const friendly = FAILURE_TEXT[reason] || 'the shader failed unexpectedly.';
+  setStatus(`${friendly} details in the console.`, 'is-error');
+  if (fallback) {
+    const p = fallback.querySelector('p');
+    if (p) p.textContent = `${friendly} try Chrome / Edge 113+, or Safari 18+.`;
+    fallback.hidden = false;
+  }
+}
+
 (async () => {
+  // visible loading state — replaced by is-live / is-error when done
+  setStatus('initializing webgpu…', 'is-loading');
+
+  // if the CDN bundle hangs or init stalls, don't leave "initializing" up forever;
+  // showFailure below self-corrects if init still succeeds afterwards
+  initWatchdog = setTimeout(() => {
+    if (statusEl && statusEl.classList.contains('is-loading')) showFailure('timeout');
+  }, 20000);
+
   // Fail fast with a friendly message when WebGPU isn't available
   if (!navigator.gpu) {
     setStatus('webgpu unavailable in this browser.', 'is-error');
@@ -237,13 +299,28 @@ function buildControls(preview) {
     const preview = await createPreview(canvas, {
       shader: '72ffd4f1-d95f-4a5e-a904-52f27a37fcf1',
     });
+    stripLicenseBadge(canvas);
+
+    clearTimeout(initWatchdog);
 
     // hand the returned instance to other scripts/console poke-arounders
     window.shaderPreview = preview;
 
     buildControls(preview);
     attachCursorGlow(preview);
+    // also recovers a watchdog false alarm: init was just slow, not dead
     setStatus('live — rendered with webgpu. move your cursor over it, or poke window.shaderPreview', 'is-live');
+    if (fallback) fallback.hidden = true;
+
+    // a GPU that dies later (device loss, OOM, driver reset) doesn't throw here —
+    // the instance only exposes it via getFailureReason(), so poll it. device
+    // losses can recover transparently, so require the reason to persist across
+    // two checks before declaring the demo dead.
+    failurePoll = setInterval(() => {
+      const reason = typeof preview.getFailureReason === 'function' && preview.getFailureReason();
+      if (reason && reason === lastSeenReason) showFailure(reason);
+      lastSeenReason = reason;
+    }, 3000);
 
     // stop the render loop if the user leaves, restart when they come back
     document.addEventListener('visibilitychange', () => {
@@ -251,8 +328,6 @@ function buildControls(preview) {
       else preview.resume();
     });
   } catch (err) {
-    console.error('[shader-demo]', err);
-    setStatus('shader failed to load — check the console.', 'is-error');
-    fallback.hidden = false;
+    showFailure('init-failed', err);
   }
 })();

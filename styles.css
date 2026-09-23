@@ -1656,6 +1656,28 @@ button:focus-visible {
 
 .shader-status.is-live { color: var(--sage); }
 .shader-status.is-error { color: #d9736c; }
+.shader-status.is-loading { color: var(--text-dim); }
+
+.shader-status.is-loading::after {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 8px;
+  vertical-align: -0.15em;
+  border: 1.5px solid var(--text-dim);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: shader-spin 0.8s linear infinite;
+}
+
+@keyframes shader-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shader-status.is-loading::after { animation: none; opacity: 0.5; }
+}
 
 /* ---------- shader controls ---------- */
 .shader-controls {
