@@ -1,4 +1,8 @@
 {
+  "name": "roen-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Roen's personal portfolio site — static HTML/CSS/JS with a WebGPU shader playground",
   "dependencies": {
     "shaders": "^3.2.470"
   }
