@@ -75,8 +75,10 @@
 <main class="playground-main">
   <a href="index.html" class="playground-back">← back to site</a>
 
-  <div class="playground-head">
-    <h1>playground</h1>
+  <div class="playground-head" data-reveal-group>
+    <div class="section-head">
+      <h1>playground</h1>
+    </div>
     <p>A small handwritten terminal, no framework, just JS. Type a command and see what happens. Type <span style="color: var(--accent)">help</span> to get started.</p>
   </div>
 
@@ -109,11 +111,11 @@
     <button class="btn btn-primary" id="bubbleToggle" type="button" aria-pressed="false">🫧 activate bubble wand</button>
   </div>
 
-  <div class="shader-section">
+  <div class="shader-section" data-reveal-group>
     <div class="section-head">
       <h2>shader demo</h2>
     </div>
-    <p class="shader-intro">A WebGPU shader — "Sapphire Glow Up" — rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it — the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+). The free tier's upsell badge is stripped on load.</p>
+    <p class="shader-intro">A WebGPU shader — "Sapphire Glow Up" — rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it — the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+).</p>
     <div class="shader-frame">
       <div class="terminal-bar">
         <span class="terminal-dot"></span>
