@@ -4,6 +4,9 @@
   --text: #E8E6DE;
   --text-dim: #8B8F86;
   --accent: #E8A33D;
+  --accent-text: #E8A33D;
+  --accent-rgb: 232, 163, 61;
+  --error: #d9736a;
   --sage: #7C9885;
   --border: #262B24;
   --border-hover: #3A4136;
@@ -18,6 +21,9 @@
   --text: #1A1B17;
   --text-dim: #6B6F64;
   --accent: #C6821F;
+  --accent-text: #946010;
+  --accent-rgb: 198, 130, 31;
+  --error: #B23A32;
   --sage: #4F6B57;
   --border: #DDD8CC;
   --border-hover: #B9B2A0;
@@ -33,7 +39,7 @@ html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.15s !important; }
 }
 
 body {
@@ -87,8 +93,8 @@ a { color: inherit; text-decoration: none; }
 
 .social-icon:hover {
   border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15);
+  color: var(--accent-text);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
 }
 
 .social-icon svg {
@@ -241,11 +247,11 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(0);
 }
 
-.boot-line .boot-prompt { color: var(--accent); margin-right: 2px; }
+.boot-line .boot-prompt { color: var(--accent-text); margin-right: 2px; }
 .boot-line .boot-ok { color: var(--sage); margin-right: 6px; }
 .boot-line .boot-cursor {
   display: inline-block;
-  color: var(--accent);
+  color: var(--accent-text);
   animation: blink 1s step-end infinite;
 }
 
@@ -265,7 +271,7 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.loader-skip:hover { border-color: var(--accent); color: var(--accent); }
+.loader-skip:hover { border-color: var(--accent); color: var(--accent-text); }
 .loader-skip:active { transform: translateX(-50%) scale(0.96); }
 
 .loader-name {
@@ -354,7 +360,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .cursor-static {
-  color: var(--accent);
+  color: var(--accent-text);
   display: inline-block;
   animation: soft-blink 1.4s steps(2, start) infinite;
 }
@@ -398,16 +404,16 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   left: 50%;
   bottom: -2px;
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   opacity: 0;
   transform: translateX(-50%);
   transition: opacity 0.15s ease;
 }
 
-.topnav a:hover, .topnav a:focus-visible { color: var(--accent); }
+.topnav a:hover, .topnav a:focus-visible { color: var(--accent-text); }
 .topnav a:hover::after, .topnav a:focus-visible::after { opacity: 1; }
-.topnav a.is-current { color: var(--accent); }
+.topnav a.is-current { color: var(--accent-text); }
 .topnav a.is-current::after { opacity: 1; }
 
 .theme-toggle {
@@ -473,8 +479,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 @keyframes theme-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.4); }
-  100% { box-shadow: 0 0 0 12px rgba(232, 163, 61, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.4); }
+  100% { box-shadow: 0 0 0 12px rgba(var(--accent-rgb), 0); }
 }
 
 .menu-toggle {
@@ -537,7 +543,7 @@ a { color: inherit; text-decoration: none; }
 /* close: no delay, all fade together quickly */
 .mobile-nav:not(.is-open) nav a { transition-delay: 0s !important; }
 
-.mobile-nav nav a:hover { color: var(--accent); }
+.mobile-nav nav a:hover { color: var(--accent-text); }
 
 .menu-close {
   position: absolute;
@@ -643,13 +649,13 @@ a { color: inherit; text-decoration: none; }
 
 .prompt-user { color: var(--sage); }
 .prompt-sep { color: var(--text-dim); margin: 0 1px; }
-.prompt-path { color: var(--accent); }
+.prompt-path { color: var(--accent-text); }
 
 #typedWhoami { color: var(--text); }
 
 .cursor-blink {
   display: inline-block;
-  color: var(--accent);
+  color: var(--accent-text);
   animation: blink 1s step-end infinite;
 }
 
@@ -679,7 +685,7 @@ a { color: inherit; text-decoration: none; }
    --measure copy is hidden and used to measure text width off-screen. */
 .role-word {
   display: inline-block;
-  color: var(--accent);
+  color: var(--accent-text);
   border-bottom: 1px solid var(--accent);
   padding-bottom: 2px;
   white-space: nowrap;
@@ -773,7 +779,7 @@ a { color: inherit; text-decoration: none; }
 
 .btn-primary:hover::after { left: 125%; }
 
-.btn-primary:hover { background: #f0b158; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232, 163, 61, 0.25); }
+.btn-primary:hover { background: #f0b158; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.25); }
 
 .btn-ghost { color: var(--text); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent-text); }
@@ -894,7 +900,7 @@ section {
 .section-head .tag {
   font-family: var(--mono);
   font-size: 13px;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .section-head h2 {
@@ -1029,7 +1035,7 @@ section {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(232, 163, 61, 0.09), transparent 65%);
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--accent-rgb), 0.09), transparent 65%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -1071,7 +1077,7 @@ section {
 }
 
 .project-date { color: var(--text-dim); }
-.project-github { color: var(--accent); }
+.project-github { color: var(--accent-text); }
 .project-github:hover { text-decoration: underline; }
 
 .project-main {
@@ -1101,7 +1107,7 @@ section {
   margin: -4px 0 0;
 }
 
-.project-outcome span { color: var(--accent); }
+.project-outcome span { color: var(--accent-text); }
 
 .project-tags {
   display: flex;
@@ -1125,7 +1131,7 @@ section {
 .expand-btn {
   background: none;
   border: none;
-  color: var(--accent);
+  color: var(--accent-text);
   font-family: var(--mono);
   font-size: 13px;
   padding: 0;
@@ -1228,9 +1234,10 @@ section {
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15);
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+  border-color: var(--accent-text);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
 }
 
 .contact-form textarea {
@@ -1268,7 +1275,7 @@ section {
 .contact-cta:hover::before { left: 130%; }
 
 .contact-cta:hover {
-  box-shadow: 0 0 0 1px var(--accent), 0 0 18px 2px rgba(232, 163, 61, 0.45);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 18px 2px rgba(var(--accent-rgb), 0.45);
 }
 
 /* contact-cta has its own ::before shimmer — skip the generic btn-primary one */
@@ -1286,6 +1293,17 @@ section {
   font-size: 13px;
   margin: 14px 0 0;
   min-height: 1em;
+}
+
+/* labels for screen readers; placeholders stay as the visible hint */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* honeypot spam trap — visually and programmatically hidden from humans,
@@ -1310,7 +1328,7 @@ section {
 }
 
 .contact-form-status.is-success { color: var(--sage); animation: status-in 0.4s ease; }
-.contact-form-status.is-error { color: #d9736a; animation: status-in 0.4s ease; }
+.contact-form-status.is-error { color: var(--error); animation: status-in 0.4s ease; }
 
 @keyframes status-in {
   from { opacity: 0; transform: translateY(4px); }
@@ -1411,7 +1429,7 @@ button:focus-visible {
   transition: color 0.15s ease;
 }
 
-.playground-back:hover { color: var(--accent); }
+.playground-back:hover { color: var(--accent-text); }
 
 .playground-head .section-head { margin-bottom: 12px; }
 
@@ -1498,7 +1516,7 @@ button:focus-visible {
 
 .terminal-output .out-cmd { color: var(--text); }
 .terminal-output .out-cmd::before { content: "roen@ntu:~/playground$ "; color: var(--sage); }
-.terminal-output .out-accent { color: var(--accent); }
+.terminal-output .out-accent { color: var(--accent-text); }
 .terminal-output .out-error { color: #d9736c; }
 .terminal-output .out-dim { color: var(--text-dim); opacity: 0.85; }
 
@@ -1552,7 +1570,7 @@ button:focus-visible {
   }
 }
 
-.terminal-hint span { color: var(--accent); }
+.terminal-hint span { color: var(--accent-text); }
 
 /* ---------- shader demo ---------- */
 .shader-section {
@@ -1568,7 +1586,7 @@ button:focus-visible {
 
 .shader-mono {
   font-family: var(--mono);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .shader-frame {
@@ -1694,7 +1712,7 @@ button:focus-visible {
 }
 
 .shader-reset:hover {
-  color: var(--accent);
+  color: var(--accent-text);
   border-color: var(--accent);
 }
 
@@ -1803,13 +1821,13 @@ button:focus-visible {
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #f0c589, var(--accent) 45%, var(--sage) 100%);
   border: 2px solid var(--border);
-  box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.5);
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.5);
   animation: poolPulse 2.4s ease-in-out infinite;
 }
 
 @keyframes poolPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.35); }
-  50% { box-shadow: 0 0 0 10px rgba(232, 163, 61, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.35); }
+  50% { box-shadow: 0 0 0 10px rgba(var(--accent-rgb), 0); }
 }
 
 .bubble-pool.is-full .bubble-pool-liquid { animation: none; box-shadow: none; }
@@ -1827,8 +1845,8 @@ button:focus-visible {
   border-radius: 50%;
   pointer-events: auto;
   cursor: pointer;
-  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.85), rgba(232,163,61,0.35) 40%, rgba(124,152,133,0.25) 75%, rgba(124,152,133,0.05) 100%);
-  border: 1px solid rgba(232,163,61,0.4);
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.85), rgba(var(--accent-rgb), 0.35) 40%, rgba(124,152,133,0.25) 75%, rgba(124,152,133,0.05) 100%);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
   z-index: 1150;
   animation: bubbleRise linear forwards;
 }
@@ -1873,7 +1891,7 @@ button:focus-visible {
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(232,163,61,0.5) 40%, rgba(124,152,133,0.4) 80%);
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(var(--accent-rgb), 0.5) 40%, rgba(124,152,133,0.4) 80%);
   border: 2px solid var(--accent);
   display: flex;
   align-items: center;

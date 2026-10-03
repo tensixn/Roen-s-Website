@@ -61,7 +61,7 @@
 <div class="loader" id="loader">
   <div class="loader-inner">
     <div class="boot-lines" id="bootLines"></div>
-    <h1 class="loader-name" id="loaderName">hello, i'm roen!</h1>
+    <div class="loader-name" id="loaderName" aria-hidden="true">hello, i'm roen!</div>
     <button class="loader-skip" id="skipBtn" type="button">skip →</button>
   </div>
 </div>
@@ -194,9 +194,9 @@
             <p class="project-desc">The site you are currently on. Built to introduce myself, show what I've been working on, and give people a real place to find my projects instead of a scattered GitHub profile.</p>
             <p class="project-outcome"><span aria-hidden="true">→ </span>No framework and no template, everything is handwritten.</p>
           </div>
-          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+          <button class="expand-btn" type="button" aria-expanded="false" aria-controls="projectMore1">see more</button>
         </div>
-        <div class="project-more">
+        <div class="project-more" id="projectMore1">
           <p>I wanted something that looked and felt like the tools I actually use every day, a terminal, a dark editor theme, monospace type, rather than a generic template. Built it in plain HTML, CSS, and JS on purpose, no framework overhead for something this size.</p>
           <p>Still adding to it as I build more. The playground page is where I'm testing small handwritten JS ideas outside of the main site.</p>
         </div>
@@ -218,9 +218,9 @@
             <p class="project-desc">A React Native app that helps NTU students find, host, and join pickup sports games on campus in seconds. Built with Expo, with light and dark themes throughout.</p>
             <p class="project-outcome"><span aria-hidden="true">→ </span>Replaces scrolling a group chat with browsing open games and joining in one tap.</p>
           </div>
-          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+          <button class="expand-btn" type="button" aria-expanded="false" aria-controls="projectMore2">see more</button>
         </div>
-        <div class="project-more">
+        <div class="project-more" id="projectMore2">
           <p>Built for a hackathon and started this because finding a pickup game on campus usually meant scrolling through a messy group chat. The matching app gives it a proper interface instead, browse open games, see who's in, join with one tap.</p>
           <p>Most recently I built out a complete dark mode system, a ThemeContext with light and dark palettes wired through a useTheme() hook, applied across the whole codebase rather than bolted on after.</p>
         </div>
@@ -242,9 +242,9 @@
             <p class="project-desc">A Chrome extension that summarizes whatever webpage you're currently browsing using AI, built with a small team in a single hackathon sprint.</p>
             <p class="project-outcome"><span aria-hidden="true">→ </span>Summarizes the page you're already on, so there's no copying it into a chatbot.</p>
           </div>
-          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+          <button class="expand-btn" type="button" aria-expanded="false" aria-controls="projectMore3">see more</button>
         </div>
-        <div class="project-more">
+        <div class="project-more" id="projectMore3">
           <p>I worked on the extension side, the part that actually sits in your browser, pulls the page content, and shows the summary back to you. A teammate handled the Node server that talks to the AI model. We built this to help those with disabilities access information more easily.</p>
         </div>
       </article>
@@ -265,9 +265,9 @@
             <p class="project-desc">A turn-based combat game built in Java for my OOP module, built with a team of four applying SOLID principles and proper design patterns instead of just making it work.</p>
             <p class="project-outcome"><span aria-hidden="true">→ </span>Structured so four people could work in parallel without stepping on each other.</p>
           </div>
-          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+          <button class="expand-btn" type="button" aria-expanded="false" aria-controls="projectMore4">see more</button>
         </div>
-        <div class="project-more">
+        <div class="project-more" id="projectMore4">
           <p>I was the Items and Mechanics Expert on the team, responsible for the item system and how combat mechanics actually resolved turn to turn. The assignment cared as much about the architecture as the gameplay, so a lot of the real work was in keeping the class structure clean enough that four people could work on it without stepping on each other.</p>
         </div>
       </article>
@@ -288,9 +288,9 @@
             <p class="project-desc">A Telegram bot for tracking stocks and crypto, with price lookups, AI-powered predictions, watchlists, and portfolio tracking, right from a chat window. Search @StoxedBot on Telegram.</p>
             <p class="project-outcome"><span aria-hidden="true">→ </span>Live on Railway, so prices, watchlists and P&L are in the chat app you already have open.</p>
           </div>
-          <button class="expand-btn" type="button" aria-expanded="false">see more</button>
+          <button class="expand-btn" type="button" aria-expanded="false" aria-controls="projectMore5">see more</button>
         </div>
-        <div class="project-more">
+        <div class="project-more" id="projectMore5">
           <p>Built this because checking prices meant switching apps constantly, a Telegram bot meant it lived right where I was already texting people anyway. It handles price lookups, watchlist management, portfolio tracking, and a P&L calendar, plus AI-powered predictions through Claude's API for a second opinion on a ticker.</p>
           <p>Deployed on Railway so it's actually live and usable, not just something that runs on my laptop.</p>
         </div>
@@ -318,11 +318,14 @@
 
       <form id="contactForm" class="contact-form" action="https://formspree.io/f/mgavvrro" method="POST">
         <div class="contact-form-row">
-          <input type="text" name="name" placeholder="Your Name" autocomplete="name" required>
-          <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+          <label class="sr-only" for="cfName">Your name</label>
+          <input type="text" id="cfName" name="name" placeholder="Your Name" autocomplete="name" required>
+          <label class="sr-only" for="cfEmail">Email</label>
+          <input type="email" id="cfEmail" name="email" placeholder="Email" autocomplete="email" required>
         </div>
-        <textarea name="message" placeholder="What's on your mind?" rows="6" required></textarea>
-        <!-- honeypot field for Formspree's spam filtering — hidden from humans -->
+        <label class="sr-only" for="cfMessage">Message</label>
+        <textarea id="cfMessage" name="message" placeholder="What's on your mind?" rows="6" required></textarea>
+        <!-- honeypot field for Formspree's spam filtering - hidden from humans -->
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
         <button type="submit" class="btn btn-primary contact-cta">
           <span class="cta-label">send message</span>

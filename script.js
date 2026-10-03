@@ -529,7 +529,15 @@ function closeMobileNav() {
 }
 // playground page has no mobile nav - guard against null
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileNav && mobileNav.classList.contains('is-open')) closeMobileNav();
+  if (!mobileNav || !mobileNav.classList.contains('is-open')) return;
+  if (e.key === 'Escape') closeMobileNav();
+  if (e.key === 'Tab') {
+    // keep focus inside the open menu
+    const items = [menuClose, ...mobileNav.querySelectorAll('a')];
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
 });
 
 if (menuToggle) menuToggle.addEventListener('click', openMobileNav);

@@ -63,10 +63,10 @@ const commands = {
     `computer science student at NTU. i like shipping things more than\ncollecting certificates. into fintech, investing, and turning messy\ndata into something a person can actually use.`,
 
   projects: () =>
-    `1. Roen's Website — this site, plain html/css/js\n2. SummerBuild — react native app for NTU pickup sports games\n\nsee the full writeups at <a href="index.html#projects" style="color: var(--accent)">index.html#projects</a>`,
+    `1. Roen's Website - this site, plain html/css/js\n2. SummerBuild - react native app for NTU pickup sports games\n\nsee the full writeups at <a href="index.html#projects" style="color: var(--accent-text)">index.html#projects</a>`,
 
   contact: () =>
-    `email: neorwoes@gmail.com\ngithub: github.com/tensixn\n\nor just go to <a href="index.html#contact" style="color: var(--accent)">index.html#contact</a> and hit send message`,
+    `email: neorwoes@gmail.com\ngithub: github.com/tensixn\n\nor just go to <a href="index.html#contact" style="color: var(--accent-text)">index.html#contact</a> and hit send message`,
 
   spire: () =>
     `currently deep in Slay the Spire 2. if you have a good deck archetype\nto recommend, that basically counts as a contact form submission.`,
