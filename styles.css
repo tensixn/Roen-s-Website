@@ -1385,7 +1385,8 @@ section {
 
 /* keyboard focus visibility */
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+[role="button"]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -1571,6 +1572,20 @@ button:focus-visible {
 }
 
 .terminal-hint span { color: var(--accent-text); }
+
+/* hints are real buttons that run (or pre-type) the command */
+.hint-cmd {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent-text);
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.hint-cmd:hover { text-decoration-style: solid; }
+@media (pointer: coarse) { .hint-cmd { padding: 12px 4px; } }
 
 /* ---------- shader demo ---------- */
 .shader-section {
@@ -1938,6 +1953,8 @@ button:focus-visible {
   font-family: var(--mono);
   font-size: 13px;
   color: #16130A;
+  background: rgba(244, 241, 234, 0.9);
+  border-radius: 12px;
   text-align: center;
   line-height: 1.7;
   margin: 0;
@@ -1945,8 +1962,13 @@ button:focus-visible {
   max-width: 175px;
 }
 
+.bubble-mobile-note { display: none; }
+
 @media (max-width: 640px) {
   .bubble-wand, .bubble-meter, .bubble-total, .bubble-pool { display: none !important; }
+  /* the wand needs its meter and pool, so on small screens say so instead of offering a dead toggle */
+  #bubbleToggle, .bubble-section .terminal-hint--keys { display: none; }
+  .bubble-mobile-note { display: block; }
 }
 
 /* ---------- terminal matrix command ---------- */

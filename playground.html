@@ -90,7 +90,7 @@
       <span class="terminal-title">roen@ntu: ~/playground</span>
     </div>
     <div class="terminal-body" id="terminalBody">
-      <div class="terminal-output" id="terminalOutput">
+      <div class="terminal-output" id="terminalOutput" role="log" aria-label="terminal output">
         <p>type <span class="out-accent">help</span> to see what this thing can do.</p>
       </div>
       <div class="terminal-input-row">
@@ -100,7 +100,7 @@
     </div>
   </div>
 
-  <p class="terminal-hint">try: <span>help</span> · <span>neofetch</span> · <span>banner</span> · <span>cat</span> · <span>open</span> · <span>roll</span> · <span>rps</span> · <span>fortune</span> · <span>matrix</span> · <span>theme</span> · <span>sudo</span></p>
+  <p class="terminal-hint">try: <button type="button" class="hint-cmd" data-cmd="help">help</button> · <button type="button" class="hint-cmd" data-cmd="whoami">whoami</button> · <button type="button" class="hint-cmd" data-cmd="projects">projects</button> · <button type="button" class="hint-cmd" data-cmd="neofetch">neofetch</button> · <button type="button" class="hint-cmd" data-cmd="cat about.txt">cat</button> · <button type="button" class="hint-cmd" data-fill="open ">open</button> · <button type="button" class="hint-cmd" data-cmd="roll 2d20">roll</button> · <button type="button" class="hint-cmd" data-cmd="rps rock">rps</button> · <button type="button" class="hint-cmd" data-cmd="fortune">fortune</button> · <button type="button" class="hint-cmd" data-cmd="matrix">matrix</button> · <button type="button" class="hint-cmd" data-cmd="theme">theme</button></p>
   <p class="terminal-hint terminal-hint--keys">tab completes · ↑/↓ walks history</p>
 
   <div class="bubble-section" data-reveal-group>
@@ -109,6 +109,9 @@
     </div>
     <p class="bubble-intro">A cursor that blows bubbles. Move around, scroll, click things, your liquid runs out eventually, dip the wand in the pool to refill. Pop 10 and something happens.</p>
     <button class="btn btn-primary" id="bubbleToggle" type="button" aria-pressed="false">🫧 activate bubble wand</button>
+    <p class="terminal-hint bubble-mobile-note">The bubble wand needs a bigger screen. Try it on a desktop or tablet.</p>
+    <p class="terminal-hint terminal-hint--keys">keyboard: b blows a bubble · p pops one · r refills · esc stops</p>
+    <p class="sr-only" id="bubbleLive" role="status" aria-live="polite"></p>
   </div>
 
   <div class="shader-section" data-reveal-group>
@@ -156,15 +159,15 @@
 
 <div class="bubble-total" id="bubbleTotal">🫧 popped: <span id="bubbleTotalCount">0</span></div>
 
-<div class="bubble-pool" id="bubblePool">
+<div class="bubble-pool" id="bubblePool" role="button" tabindex="0" aria-label="refill liquid">
   <div class="bubble-pool-liquid"></div>
-  <span class="bubble-pool-label">double-click to refill</span>
+  <span class="bubble-pool-label">double-click or press r to refill</span>
 </div>
 
-<div class="bubble-milestone" id="bubbleMilestone" style="display:none;">
+<div class="bubble-milestone" id="bubbleMilestone" style="display:none;" role="dialog" aria-modal="true" aria-label="bubble milestone">
   <button class="bubble-milestone-backdrop" id="bubbleMilestoneBackdrop" type="button" aria-label="dismiss milestone"></button>
   <span class="bubble-wrap">
-    <div class="bubble-milestone-inner" id="bubbleMilestoneBubble">
+    <div class="bubble-milestone-inner" id="bubbleMilestoneBubble" role="button" tabindex="0" aria-label="pop the milestone bubble">
       <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click to pop this one too</p>
     </div>
   </span>

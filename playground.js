@@ -33,28 +33,37 @@ function printCommand(cmd) {
 const commands = {
   help: () =>
     `available commands:
-  help       show this list
+
+about me
   whoami     who am i, really
   about      short bio
   projects   list of things i've built
   contact    how to reach me
-  spire      current obsession
-  neofetch   system info, but make it a portfolio
-  banner     big ascii name
-  ls         list files at ~/playground
-  cat        read a file (try: cat about.txt)
-  open       jump somewhere (try: open github)
   resume     open the resume in a new tab
-  theme      flip light/dark, or pass 'light' / 'dark'
-  echo       repeat what you say back
-  history    show recent commands
+  spire      current obsession
+
+games and toys
   roll       roll a die (try: roll 2d20)
   flip       flip a coin
   fortune    crack a fortune cookie
   rps        play rock paper scissors
   matrix     fall into the code rain
-  weather    check the weather on roenOS
   sudo       try it
+
+around the site
+  open       jump somewhere (try: open github)
+  ls         list files at ~/playground
+  cat        read a file (try: cat about.txt)
+  theme      flip light/dark, or pass 'light' / 'dark'
+
+the terminal
+  help       show this list
+  neofetch   system info, but make it a portfolio
+  banner     big ascii name
+  weather    check the weather on roenOS
+  date       today's date
+  echo       repeat what you say back
+  history    show recent commands
   clear      clear the terminal`,
 
   whoami: () => 'roen · cs student at NTU, building toward software engineering.',
@@ -373,4 +382,23 @@ if (input) {
   });
 
   body.addEventListener('click', () => input.focus());
+}
+
+/* ---------- clickable command hints + a first line so the terminal isn't empty ---------- */
+if (input) {
+  document.querySelectorAll('.hint-cmd').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.fill) {
+        // commands that need an argument are typed for you, not run
+        input.value = btn.dataset.fill;
+        input.focus();
+        return;
+      }
+      const cmd = btn.dataset.cmd;
+      runCommand(cmd);
+      commandHistory.unshift(cmd);
+      historyPos = -1;
+    });
+  });
+  runCommand('whoami');
 }

@@ -11,6 +11,7 @@
   const milestoneBubble = document.getElementById('bubbleMilestoneBubble');
   const milestoneBackdrop = document.getElementById('bubbleMilestoneBackdrop');
   const milestoneNum = document.getElementById('bubbleMilestoneNum');
+  const live = document.getElementById('bubbleLive');
 
   if (!toggleBtn) return;
 
@@ -26,7 +27,12 @@
   let resource = MAX_RESOURCE;
   let onScreen = 0;
   let lastSpawn = 0;
-  let totalPopped = parseInt(localStorage.getItem('roen_bubble_pops') || '0', 10);
+  // storage can be blocked (private mode, hardened settings); the toy still works without it
+  const popStore = {
+    get() { try { return parseInt(localStorage.getItem('roen_bubble_pops') || '0', 10) || 0; } catch (e) { return 0; } },
+    set(n) { try { localStorage.setItem('roen_bubble_pops', String(n)); } catch (e) { /* blocked */ } }
+  };
+  let totalPopped = popStore.get();
   let nextMilestone = (Math.floor(totalPopped / MILESTONE_STEP) + 1) * MILESTONE_STEP;
 
   totalCountEl.textContent = totalPopped;
@@ -130,7 +136,7 @@
     playPop(false);
     totalPopped++;
     totalCountEl.textContent = totalPopped;
-    localStorage.setItem('roen_bubble_pops', String(totalPopped));
+    popStore.set(totalPopped);
     setTimeout(() => {
       el.remove();
       onScreen--;
@@ -142,9 +148,14 @@
     }
   }
 
+  let focusBeforeMilestone = null;
+
   function showMilestone(count) {
     milestoneNum.textContent = count;
+    if (live) live.textContent = count + ' bubbles popped. Press Enter to pop the milestone bubble, or Escape to dismiss.';
+    focusBeforeMilestone = document.activeElement;
     milestone.style.display = 'flex';
+    milestoneBubble.focus();
     // retrigger the entrance animation each time
     milestoneBubble.classList.remove('is-popping', 'is-entering');
     void milestoneBubble.offsetWidth;
@@ -154,13 +165,16 @@
   function hideMilestone() {
     milestone.style.display = 'none';
     milestoneBubble.classList.remove('is-popping', 'is-entering');
+    if (focusBeforeMilestone && focusBeforeMilestone.focus) focusBeforeMilestone.focus();
   }
 
-  milestoneBubble.addEventListener('click', () => {
+  function popMilestone() {
     playPop(true);
     milestoneBubble.classList.add('is-popping');
     setTimeout(hideMilestone, 260);
-  });
+  }
+
+  milestoneBubble.addEventListener('click', popMilestone);
 
   // backdrop button dismisses without popping the bubble
   if (milestoneBackdrop) {
@@ -175,20 +189,13 @@
       resource -= 1;
       spawnBubble(x, y - 10);
       updateMeter();
+      if (resource <= 0 && live) live.textContent = 'Out of liquid. Dip the wand in the pool to refill.';
     }
   }
 
   function onMouseMove(e) {
     wand.style.transform = `translate(${e.clientX - 8}px, ${e.clientY - 30}px)`;
     spawnFromPointer(e.clientX, e.clientY);
-  }
-
-  function onTouchMove(e) {
-    const t = e.touches[0];
-    if (!t) return;
-    spawnFromPointer(t.clientX, t.clientY);
-    // don't let bubble spawning fight the page scroll on touch
-    if (resource > 0) e.preventDefault();
   }
 
   function onTouchStart(e) {
@@ -235,6 +242,9 @@
   }
 
   pool.addEventListener('dblclick', refill);
+  pool.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); refill(); }
+  });
 
   // single tap refills too on touch devices — dblclick is unreliable there
   if (isTouch) {
@@ -258,10 +268,8 @@
     getCtx(); // unlock audio inside the user gesture
     if (!isTouch) window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('scroll', onScroll, { passive: true });
-    if (isTouch) {
-      window.addEventListener('touchstart', onTouchStart, { passive: false });
-      window.addEventListener('touchmove', onTouchMove, { passive: false });
-    }
+    // taps blow bubbles; swiping is left to the page so scrolling is never blocked
+    if (isTouch) window.addEventListener('touchstart', onTouchStart, { passive: true });
     document.addEventListener('click', onDocumentClick);
   }
 
@@ -276,10 +284,7 @@
     toggleBtn.setAttribute('aria-pressed', 'false');
     if (!isTouch) window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('scroll', onScroll);
-    if (isTouch) {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-    }
+    if (isTouch) window.removeEventListener('touchstart', onTouchStart);
     document.removeEventListener('click', onDocumentClick);
   }
 
@@ -288,7 +293,39 @@
     else activate();
   });
 
+  // the HUD (meter, pool, count) is hidden on small screens, so the wand can't run there
+  window.matchMedia('(max-width: 640px)').addEventListener('change', (e) => {
+    if (e.matches && active) deactivate();
+  });
+
+  const milestoneOpen = () => milestone.style.display !== 'none';
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && active) deactivate();
+    if (milestoneOpen()) {
+      if (e.key === 'Escape') hideMilestone();
+      else if (e.key === 'Enter' || e.key === ' ') { if (document.activeElement === milestoneBubble) { e.preventDefault(); popMilestone(); } }
+      else if (e.key === 'Tab') {
+        // keep focus on the two controls inside the milestone dialog
+        e.preventDefault();
+        (document.activeElement === milestoneBubble ? milestoneBackdrop : milestoneBubble).focus();
+      }
+      return;
+    }
+    if (!active) return;
+    if (e.key === 'Escape') { deactivate(); return; }
+    // keyboard route to the toy, so it is not mouse-only; typing in a field is left alone
+    if (e.target.closest('input, textarea, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'b' && resource > 0) {
+      resource -= 1;
+      spawnBubble(window.innerWidth * (0.25 + Math.random() * 0.5), window.innerHeight * (0.5 + Math.random() * 0.3));
+      updateMeter();
+      if (resource <= 0 && live) live.textContent = 'Out of liquid. Press R to refill.';
+    } else if (k === 'p') {
+      const target = document.querySelector('.bubble:not(.is-popping)');
+      if (target) popBubble(target);
+    } else if (k === 'r') {
+      refill();
+    }
   });
 })();
