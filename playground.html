@@ -10,23 +10,23 @@
       if (localStorage.getItem('roen_theme') === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
       }
-    } catch (e) { /* blocked — stay on the default theme */ }
+    } catch (e) { /* blocked - stay on the default theme */ }
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
-<title>playground — roen</title>
+<title>playground - roen</title>
 <meta name="description" content="A small handwritten terminal to poke around in. Try 'help'.">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://roennn.vercel.app/playground.html">
-<meta property="og:title" content="playground — roen">
+<meta property="og:title" content="playground - roen">
 <meta property="og:description" content="A small handwritten terminal to poke around in. Try 'help'.">
 <meta property="og:image" content="https://roennn.vercel.app/og-image.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="playground — roen">
+<meta name="twitter:title" content="playground - roen">
 <meta name="twitter:image" content="https://roennn.vercel.app/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,7 +115,7 @@
     <div class="section-head">
       <h2>shader demo</h2>
     </div>
-    <p class="shader-intro">A WebGPU shader — "Sapphire Glow Up" — rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it — the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+).</p>
+    <p class="shader-intro">A WebGPU shader - "Sapphire Glow Up" - rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it - the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+).</p>
     <div class="shader-frame">
       <div class="terminal-bar">
         <span class="terminal-dot"></span>
@@ -126,7 +126,7 @@
       <div class="shader-canvas-wrap">
         <canvas id="shaderCanvas" role="img" aria-label="Sapphire Glow Up WebGPU shader preview"></canvas>
         <div class="shader-fallback" id="shaderFallback" hidden>
-          <p>webgpu unavailable — this demo needs Chrome / Edge 113+, or Safari 18+.</p>
+          <p>webgpu unavailable - this demo needs Chrome / Edge 113+, or Safari 18+.</p>
         </div>
       </div>
       <div class="shader-controls" id="shaderControls" hidden>

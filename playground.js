@@ -82,7 +82,7 @@ const commands = {
       count = m[2] ? Math.min(10, parseInt(m[2], 10)) : 1;
       sides = Math.max(2, Math.min(1000, parseInt(m[3], 10)));
     } else if (arg) {
-      return `roll: can't parse "${escapeHtml(arg)}" — dice notation is NdM, like 2d6 or d20.`;
+      return `roll: can't parse "${escapeHtml(arg)}" - dice notation is NdM, like 2d6 or d20.`;
     }
     const rolls = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * sides));
     const total = rolls.reduce((a, b) => a + b, 0);
@@ -119,10 +119,10 @@ const commands = {
     const beats = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
     const pick = (arg || '').toLowerCase();
     if (!moves.includes(pick)) {
-      return 'usage: rps <rock|paper|scissors> — choose your weapon.';
+      return 'usage: rps <rock|paper|scissors> - choose your weapon.';
     }
     const cpu = moves[Math.floor(Math.random() * 3)];
-    const line = `you: ${pick} · me: ${cpu} — `;
+    const line = `you: ${pick} · me: ${cpu} - `;
     if (pick === cpu) return line + 'draw. great minds.';
     if (beats[pick] === cpu) return line + 'you win. suspicious luck.';
     return line + 'i win. the machine rises.';
@@ -179,13 +179,13 @@ const commands = {
     const states = [
       { icon: '☀️', desc: 'clear skies over the NTU campus' },
       { icon: '⛅', desc: 'partly cloudy, mild 29°C' },
-      { icon: '🌧️', desc: 'raining — the library is winning' },
+      { icon: '🌧️', desc: 'raining - the library is winning' },
       { icon: '⛈️', desc: 'thunderstorm, commit early commit often' },
-      { icon: '🌫️', desc: 'hazy — even the bugs are hard to see' },
+      { icon: '🌫️', desc: 'hazy - even the bugs are hard to see' },
       { icon: '☕', desc: 'caffeine front moving in from the kitchen' },
     ];
     const s = states[Math.floor(Math.random() * states.length)];
-    return `${s.icon} roenOS weather — ${s.desc}`;
+    return `${s.icon} roenOS weather - ${s.desc}`;
   },
 
   date: () => new Date().toString(),
@@ -195,23 +195,23 @@ const commands = {
 resume.pdf  spire.save     secrets/`,
 
   cat: (arg) => {
-    if (!arg) return 'usage: cat <file> — try: cat about.txt';
+    if (!arg) return 'usage: cat <file> - try: cat about.txt';
     const files = {
       'about.txt': () => commands.about(),
       'projects.txt': () => commands.projects(),
       'contact.gpg': () => '⨯ encrypted. nice try though.',
-      'resume.pdf': () => 'binary file — run "resume" to open it instead.',
-      'spire.save': () => 'ironclad / silent / defect — all unlocked, none ascended yet.',
+      'resume.pdf': () => 'binary file - run "resume" to open it instead.',
+      'spire.save': () => 'ironclad / silent / defect - all unlocked, none ascended yet.',
       'secrets': () => 'cat: secrets/: is a directory (that is the secret)',
       'secrets/': () => 'cat: secrets/: is a directory (that is the secret)',
     };
     const key = arg.toLowerCase();
     if (key in files) return files[key]();
-    return `cat: ${escapeHtml(arg)}: no such file or directory — run "ls" to see what's here.`;
+    return `cat: ${escapeHtml(arg)}: no such file or directory - run "ls" to see what's here.`;
   },
 
   open: (arg) => {
-    if (!arg) return 'usage: open <target> — targets: github | projects | contact | resume';
+    if (!arg) return 'usage: open <target> - targets: github | projects | contact | resume';
     const targets = {
       'github': () => { window.open('https://github.com/tensixn', '_blank', 'noopener'); return 'opening github.com/tensixn ...'; },
       'projects': () => { window.open('index.html#projects', '_self'); return 'jumping to projects ...'; },
@@ -220,7 +220,7 @@ resume.pdf  spire.save     secrets/`,
     };
     const key = arg.toLowerCase();
     if (key in targets) return targets[key]();
-    return `open: unknown target "${escapeHtml(arg)}" — try: github | projects | contact | resume`;
+    return `open: unknown target "${escapeHtml(arg)}" - try: github | projects | contact | resume`;
   },
 
   neofetch: () => {
@@ -256,7 +256,7 @@ resume.pdf  spire.save     secrets/`,
   theme: (arg) => {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     if (arg !== undefined && arg !== 'light' && arg !== 'dark') {
-      return "usage: theme [light|dark] — no argument flips the current theme.";
+      return "usage: theme [light|dark] - no argument flips the current theme.";
     }
     if (arg === 'light' && isLight) return 'already in light mode.';
     if (arg === 'dark' && !isLight) return 'already in dark mode.';
@@ -282,7 +282,7 @@ resume.pdf  spire.save     secrets/`,
   history: () =>
     commandHistory.length
       ? [...commandHistory].reverse().map((c, i) => `${String(i + 1).padStart(2, ' ')}  ${c}`).join('\n')
-      : 'no history yet — type something first.',
+      : 'no history yet - type something first.',
 
   clear: () => {
     // suppress the per-line entrance animation so old lines don't re-play

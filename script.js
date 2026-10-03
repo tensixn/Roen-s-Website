@@ -65,7 +65,7 @@ if (bgEffects && !prefersReducedMotion) {
     bgEffects.appendChild(p);
   }
 
-  // gentle parallax — particles drift at a slightly different rate than the page
+  // gentle parallax - particles drift at a slightly different rate than the page
   if (!isMobileViewport()) {
     const speeds = [];
     const particleEls = bgEffects.querySelectorAll('.particle');
@@ -146,7 +146,7 @@ if (socialIconEls.length) {
       // and doesn't need to be re-measured on every scroll event
       icon.style.position = (state === 'center') ? 'absolute' : 'fixed';
       // on mobile, only show the icons once they've locked into the
-      // end/center state — hidden during both floating and column
+      // end/center state - hidden during both floating and column
       icon.style.display = (state !== 'center' && isMobile()) ? 'none' : '';
       icon.style.transition = instant ? 'none' : '';
     });
@@ -248,10 +248,10 @@ if (contactForm && contactFormStatus) {
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // form isn't hooked up to a real Formspree endpoint yet — fail fast with
+    // form isn't hooked up to a real Formspree endpoint yet - fail fast with
     // instructions instead of a confusing network error
     if (PLACEHOLDER_IDS.some((id) => contactForm.action.includes(id))) {
-      contactFormStatus.textContent = 'form isn\'t wired up yet — the site owner still needs to add a Formspree form ID. email me directly at neorwoes@gmail.com instead.';
+      contactFormStatus.textContent = 'form isn\'t wired up yet - the site owner still needs to add a Formspree form ID. email me directly at neorwoes@gmail.com instead.';
       contactFormStatus.className = 'contact-form-status is-error';
       return;
     }
@@ -271,7 +271,7 @@ if (contactForm && contactFormStatus) {
       });
 
       if (response.ok) {
-        contactFormStatus.textContent = 'message sent — thanks, I\'ll get back to you soon.';
+        contactFormStatus.textContent = 'message sent - thanks, I\'ll get back to you soon.';
         contactFormStatus.className = 'contact-form-status is-success';
         contactForm.reset();
         // the button itself confirms: label swaps to a check, border goes sage
@@ -283,23 +283,23 @@ if (contactForm && contactFormStatus) {
         }, 2600);
       } else {
         // Formspree returns JSON errors ({ errors: [...] }) with useful reasons
-        // (validation, rate limit, disabled form…) — surface them if we can
+        // (validation, rate limit, disabled form…) - surface them if we can
         let reason = '';
         try {
           const data = await response.json();
           if (data && Array.isArray(data.errors) && data.errors.length) {
             reason = ' (' + data.errors.map((er) => er.message || String(er)).join('; ') + ')';
           }
-        } catch (_) { /* non-JSON body — ignore */ }
+        } catch (_) { /* non-JSON body - ignore */ }
         if (response.status === 429) reason = ' (too many attempts, try again later)';
-        contactFormStatus.textContent = 'didn\'t go through' + reason + ' — email me directly at neorwoes@gmail.com instead.';
+        contactFormStatus.textContent = 'didn\'t go through' + reason + ' - email me directly at neorwoes@gmail.com instead.';
         contactFormStatus.className = 'contact-form-status is-error';
         contactForm.classList.remove('is-shake');
         void contactForm.offsetWidth;
         contactForm.classList.add('is-shake');
       }
     } catch (err) {
-      contactFormStatus.textContent = 'something went wrong — email me directly at neorwoes@gmail.com instead.';
+      contactFormStatus.textContent = 'something went wrong - email me directly at neorwoes@gmail.com instead.';
       contactFormStatus.className = 'contact-form-status is-error';
       contactForm.classList.remove('is-shake');
       void contactForm.offsetWidth;
@@ -420,7 +420,7 @@ function flipNameToHero() {
   loaderName.style.transform = 'none';
 
   // iOS Safari doesn't reliably pick up a style change forced via a single
-  // offsetHeight reflow before the next mutation — double rAF guarantees the
+  // offsetHeight reflow before the next mutation - double rAF guarantees the
   // "before" state is actually painted first, so the transition below plays
   // instead of silently no-opping and jump-cutting to the fallback below
   requestAnimationFrame(() => {
@@ -526,7 +526,7 @@ function closeMobileNav() {
   menuToggle.setAttribute('aria-expanded', 'false');
   if (lastFocused && lastFocused.focus) lastFocused.focus();
 }
-// playground page has no mobile nav — guard against null
+// playground page has no mobile nav - guard against null
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && mobileNav && mobileNav.classList.contains('is-open')) closeMobileNav();
 });
@@ -552,7 +552,7 @@ function typeOut(el, text, speed = 90) {
     if (i >= text.length) clearInterval(interval);
   }, speed);
 }
-// Start the typing once the hero is actually visible — otherwise it plays
+// Start the typing once the hero is actually visible - otherwise it plays
 // behind the intro loader and the user lands on an already-finished line.
 // Delay by a beat so it reads as part of the intro cascade on repeat visits.
 function startTypedWhoami() {
