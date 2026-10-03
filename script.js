@@ -328,10 +328,16 @@ const BOOT_SEQUENCE = [
   'welcome.'
 ];
 
+// storage can be blocked (private mode, hardened settings); treat that as "not seen"
+const introSeen = {
+  get() { try { return sessionStorage.getItem('roen_intro_seen'); } catch (e) { return null; } },
+  set() { try { sessionStorage.setItem('roen_intro_seen', '1'); } catch (e) { /* blocked */ } }
+};
+
 function hideLoader() {
   if (!loader) return;
   loader.classList.add('is-hidden');
-  sessionStorage.setItem('roen_intro_seen', '1');
+  introSeen.set();
 }
 
 // decode effect for the section headings (h2s scramble in like a terminal)
@@ -387,7 +393,7 @@ function markLoaded() {
 
 function isLoaderPlaying() {
   return loader
-    && !sessionStorage.getItem('roen_intro_seen')
+    && !introSeen.get()
     && !loader.classList.contains('is-hidden');
 }
 
@@ -453,7 +459,7 @@ function flipNameToHero() {
 }
 
 if (loader) {
-  if (sessionStorage.getItem('roen_intro_seen')) {
+  if (introSeen.get()) {
     loader.classList.add('is-hidden');
   } else if (prefersReducedMotion) {
     BOOT_SEQUENCE.forEach((html) => {
