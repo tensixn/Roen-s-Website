@@ -27,10 +27,32 @@ function updateThemeToggleState() {
   if (themeToggle) themeToggle.setAttribute('aria-checked', String(currentTheme() === 'light'));
 }
 
+// the new theme opens as a circle from the toggle, so the change reads as the room
+// lighting up (or dimming) from where you clicked; plain swap when unsupported or reduced motion
+let themeSwitching = false;
+function switchTheme(next) {
+  if (!document.startViewTransition || prefersReducedMotion || themeSwitching) { setTheme(next); return; }
+  const r = themeToggle.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 2;
+  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const root = document.documentElement;
+  themeSwitching = true;
+  root.classList.add('theme-vt');
+  const t = document.startViewTransition(() => setTheme(next));
+  t.ready.then(() => {
+    root.animate(
+      { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+      { duration: 550, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', pseudoElement: '::view-transition-new(root)' }
+    );
+  }).catch(() => {});
+  t.finished.finally(() => { themeSwitching = false; root.classList.remove('theme-vt'); });
+}
+
 if (themeToggle) {
   updateThemeToggleState();
   themeToggle.addEventListener('click', () => {
-    setTheme(currentTheme() === 'light' ? 'dark' : 'light');
+    switchTheme(currentTheme() === 'light' ? 'dark' : 'light');
 
     // little pulse ring on the toggle + gently settle the background particles
     const track = themeToggle.querySelector('.theme-toggle-track');

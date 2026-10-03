@@ -1402,6 +1402,14 @@ button:focus-visible,
   animation-timing-function: ease;
 }
 
+/* theme switch: script.js animates the new theme in as a circle from the toggle, so the
+   default cross-fade is turned off while it runs */
+.theme-vt::view-transition-old(root),
+.theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* ---------- playground page ---------- */
 .playground-main {
   max-width: 760px;
