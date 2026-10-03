@@ -5,6 +5,9 @@ const statusEl = document.getElementById('shaderStatus');
 const controlsEl = document.getElementById('shaderControls');
 const resetBtn = document.getElementById('shaderReset');
 const randomBtn = document.getElementById('shaderRandom');
+const colorsEl = document.getElementById('shaderColors');
+const slidersEl = document.getElementById('shaderSliders');
+const moreEl = document.getElementById('shaderMore');
 
 /* component_id -> tweakable props, defaults straight from the authored shader.
    ids verified against the decoded preview definition. */
@@ -22,11 +25,11 @@ const CONTROLS = [
     prop: 'speed', min: -2, max: 2, step: 0.05, default: -0.25,
   },
   {
-    id: 'sapphire-colorwheel', label: 'wheel color a', type: 'color',
+    id: 'sapphire-colorwheel', label: 'wheel a', type: 'color',
     prop: 'colorA', default: '#b3ffbcff',
   },
   {
-    id: 'sapphire-colorwheel', label: 'wheel color b', type: 'color',
+    id: 'sapphire-colorwheel', label: 'wheel b', type: 'color',
     prop: 'colorB', default: '#2376fc',
   },
   {
@@ -38,7 +41,7 @@ const CONTROLS = [
     prop: 'dispersion', min: 0, max: 2, step: 0.01, default: 0.42,
   },
   {
-    id: 'sapphire-thinfilm', label: 'film color c', type: 'color',
+    id: 'sapphire-thinfilm', label: 'film', type: 'color',
     prop: 'colorC', default: '#ffb3f1',
   },
   {
@@ -46,7 +49,7 @@ const CONTROLS = [
     prop: 'speed', min: -2, max: 2, step: 0.05, default: -0.15,
   },
   {
-    id: 'sapphire-stripes', label: 'stripe color b', type: 'color',
+    id: 'sapphire-stripes', label: 'stripes', type: 'color',
     prop: 'colorB', default: '#def1ffff',
   },
   {
@@ -145,10 +148,14 @@ function setStatus(text, cls) {
 function buildControls(preview) {
   if (!controlsEl) return;
 
-  // wipe any controls from a previous mount, keep the action buttons (last two children)
-  while (controlsEl.children.length > 2) {
-    controlsEl.firstChild.remove();
-  }
+  // wipe any controls from a previous mount (the action buttons live outside these groups)
+  colorsEl.replaceChildren();
+  slidersEl.replaceChildren();
+  // sliders are open on roomy screens and tucked away on small ones
+  moreEl.open = window.matchMedia('(min-width: 721px)').matches;
+
+  // decimals shown in a slider's readout follow its step (0.05 -> 2)
+  const decimals = (step) => (String(step).split('.')[1] || '').length;
 
   const rows = [];
 
@@ -186,8 +193,17 @@ function buildControls(preview) {
     });
 
     row.append(name, input);
-    rows.push({ c, input });
-    controlsEl.insertBefore(row, randomBtn);
+    let readout = null;
+    if (c.type === 'range') {
+      readout = document.createElement('output');
+      readout.className = 'shader-ctl-value';
+      readout.setAttribute('aria-hidden', 'true'); // the slider announces its own value
+      readout.textContent = Number(input.value).toFixed(decimals(c.step));
+      input.addEventListener('input', () => { readout.textContent = Number(input.value).toFixed(decimals(c.step)); });
+      row.append(readout);
+    }
+    rows.push({ c, input, readout });
+    (c.type === 'color' ? colorsEl : slidersEl).append(row);
   });
 
   controlsEl.hidden = false;
@@ -212,13 +228,14 @@ function buildControls(preview) {
   };
 
   resetBtn.onclick = () => {
-    rows.forEach(({ c, input }) => {
+    rows.forEach(({ c, input, readout }) => {
       try {
         preview.update(c.id, { [c.prop]: c.default });
       } catch (err) {
         console.error('[shader-demo] reset failed:', err);
       }
       input.value = c.type === 'color' ? c.default.slice(0, 7) : String(c.default);
+      if (readout) readout.textContent = Number(c.default).toFixed(decimals(c.step));
     });
   };
 }
@@ -253,7 +270,7 @@ const FAILURE_TEXT = {
   'no-adapter': 'no webgpu adapter is available on this device.',
   'no-device': 'the webgpu device request failed.',
   'init-failed': 'the shader failed to initialize.',
-  'timeout': 'the shader took too long to start — slow network or busy gpu.',
+  'timeout': 'the shader took too long to start. slow network or busy gpu?',
   'device-lost': 'the webgpu device was lost and could not recover.',
   'out-of-memory': 'the gpu ran out of memory for this shader.',
   'gpu-error': 'the gpu reported sustained errors.',
@@ -309,7 +326,7 @@ function showFailure(reason, log) {
     buildControls(preview);
     attachCursorGlow(preview);
     // also recovers a watchdog false alarm: init was just slow, not dead
-    setStatus('live — rendered with webgpu. move your cursor over it, or poke window.shaderPreview', 'is-live');
+    setStatus('live, rendered with webgpu. move your cursor over it, or poke window.shaderPreview', 'is-live');
     if (fallback) fallback.hidden = true;
 
     // a GPU that dies later (device loss, OOM, driver reset) doesn't throw here —

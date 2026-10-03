@@ -79,8 +79,13 @@
     <div class="section-head">
       <h1>playground</h1>
     </div>
-    <p>A small handwritten terminal, no framework, just JS. Type a command and see what happens. Type <span style="color: var(--accent-text)">help</span> to get started.</p>
+    <p>Three small things I've built outside the main site: a <a href="#terminal">terminal</a>, a <a href="#bubbles">bubble wand</a> and a <a href="#shader">WebGPU shader</a>.</p>
   </div>
+
+  <div class="section-head" id="terminal">
+    <h2>terminal</h2>
+  </div>
+  <p class="bubble-intro">A handwritten terminal in plain JS, no framework. Type a command or click one of the suggestions below, and type <span class="out-accent">help</span> for the full list.</p>
 
   <div class="terminal-wrap" id="terminalWrap">
     <div class="terminal-bar">
@@ -103,22 +108,22 @@
   <p class="terminal-hint">try: <button type="button" class="hint-cmd" data-cmd="help">help</button> · <button type="button" class="hint-cmd" data-cmd="whoami">whoami</button> · <button type="button" class="hint-cmd" data-cmd="projects">projects</button> · <button type="button" class="hint-cmd" data-cmd="neofetch">neofetch</button> · <button type="button" class="hint-cmd" data-cmd="cat about.txt">cat</button> · <button type="button" class="hint-cmd" data-fill="open ">open</button> · <button type="button" class="hint-cmd" data-cmd="roll 2d20">roll</button> · <button type="button" class="hint-cmd" data-cmd="rps rock">rps</button> · <button type="button" class="hint-cmd" data-cmd="fortune">fortune</button> · <button type="button" class="hint-cmd" data-cmd="matrix">matrix</button> · <button type="button" class="hint-cmd" data-cmd="theme">theme</button></p>
   <p class="terminal-hint terminal-hint--keys">tab completes · ↑/↓ walks history</p>
 
-  <div class="bubble-section" data-reveal-group>
+  <div class="bubble-section" id="bubbles" data-reveal-group>
     <div class="section-head">
       <h2>bubble wand</h2>
     </div>
-    <p class="bubble-intro">A cursor that blows bubbles. Move around, scroll, click things, your liquid runs out eventually, dip the wand in the pool to refill. Pop 10 and something happens.</p>
+    <p class="bubble-intro">Turns your cursor into a bubble wand. Move, scroll or click to blow bubbles, and click a bubble to pop it. When the liquid meter runs low, refill at the pool in the bottom right. Pop 10 and something happens.</p>
     <button class="btn btn-primary" id="bubbleToggle" type="button" aria-pressed="false">🫧 activate bubble wand</button>
     <p class="terminal-hint bubble-mobile-note">The bubble wand needs a bigger screen. Try it on a desktop or tablet.</p>
-    <p class="terminal-hint terminal-hint--keys">keyboard: b blows a bubble · p pops one · r refills · esc stops</p>
+    <p class="terminal-hint terminal-hint--keys">keyboard: b blows a bubble · p pops one · r refills · esc turns the wand off</p>
     <p class="sr-only" id="bubbleLive" role="status" aria-live="polite"></p>
   </div>
 
-  <div class="shader-section" data-reveal-group>
+  <div class="shader-section" id="shader" data-reveal-group>
     <div class="section-head">
       <h2>shader demo</h2>
     </div>
-    <p class="shader-intro">A WebGPU shader - "Sapphire Glow Up" - rendered live through the <span class="shader-mono">shaders</span> npm package. No bundler, just an import map pointing at the CDN bundle. Move your cursor over it - the glow follows. Needs a WebGPU-capable browser (Chrome / Edge 113+, Safari 18+).</p>
+    <p class="shader-intro">A live WebGPU shader called "Sapphire Glow Up". Move your cursor over it and the glow follows. Randomize the colors, or open fine tune to adjust it. It's built with the <span class="shader-mono">shaders</span> npm package, loaded straight from a CDN with no bundler. Needs Chrome or Edge 113+, or Safari 18+.</p>
     <div class="shader-frame">
       <div class="terminal-bar">
         <span class="terminal-dot"></span>
@@ -129,13 +134,19 @@
       <div class="shader-canvas-wrap">
         <canvas id="shaderCanvas" role="img" aria-label="Sapphire Glow Up WebGPU shader preview"></canvas>
         <div class="shader-fallback" id="shaderFallback" hidden>
-          <p>webgpu unavailable - this demo needs Chrome / Edge 113+, or Safari 18+.</p>
+          <p>WebGPU isn't available in this browser. Try Chrome or Edge 113+, or Safari 18+.</p>
         </div>
       </div>
       <div class="shader-controls" id="shaderControls" hidden>
-        <!-- sliders + swatches injected by shader-demo.js -->
-        <button class="shader-random" id="shaderRandom" type="button">🎲 randomize</button>
-        <button class="shader-reset" id="shaderReset" type="button">reset</button>
+        <div class="shader-actions">
+          <button class="shader-random" id="shaderRandom" type="button">🎲 randomize</button>
+          <button class="shader-reset" id="shaderReset" type="button">reset</button>
+        </div>
+        <div class="shader-group" id="shaderColors" role="group" aria-label="colors"><!-- swatches injected by shader-demo.js --></div>
+        <details class="shader-more" id="shaderMore">
+          <summary>fine tune</summary>
+          <div class="shader-group shader-sliders" id="shaderSliders"><!-- sliders injected by shader-demo.js --></div>
+        </details>
       </div>
     </div>
     <p class="shader-status" id="shaderStatus" aria-live="polite">initializing webgpu…</p>
@@ -168,7 +179,7 @@
   <button class="bubble-milestone-backdrop" id="bubbleMilestoneBackdrop" type="button" aria-label="dismiss milestone"></button>
   <span class="bubble-wrap">
     <div class="bubble-milestone-inner" id="bubbleMilestoneBubble" role="button" tabindex="0" aria-label="pop the milestone bubble">
-      <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click to pop this one too</p>
+      <p class="bubble-milestone-text">// milestone reached<br><span id="bubbleMilestoneNum">1000</span> bubbles popped<br>click or press enter to pop this one too</p>
     </div>
   </span>
 </div>
