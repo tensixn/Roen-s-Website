@@ -1098,7 +1098,7 @@ section {
 .project-outcome {
   color: var(--text);
   font-size: 14px;
-  margin: -4px 0 14px;
+  margin: -4px 0 0;
 }
 
 .project-outcome span { color: var(--accent); }
@@ -1107,6 +1107,7 @@ section {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin: 0 0 14px;
 }
 
 .project-tags span {
@@ -1338,6 +1339,13 @@ section {
   color: var(--text-dim);
 }
 
+/* touch: grow hit areas to 44px without changing how the controls look */
+@media (pointer: coarse) {
+  .theme-toggle { padding: 8px 0; }
+  .menu-toggle { min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
+  .expand-btn { min-height: 44px; padding: 0 8px; margin-right: -8px; }
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 720px) {
   .topbar { padding: 16px 20px; }
@@ -1345,7 +1353,7 @@ section {
   .menu-toggle { display: flex; }
   section { padding: 72px 20px; }
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
-  .status-card { position: static; }
+  .status-card { position: static; order: -1; }
   .project-main { flex-direction: column; }
   .contact-form-row { grid-template-columns: 1fr; }
   /* iOS zooms the viewport when focusing inputs smaller than 16px */

@@ -135,7 +135,8 @@ if (socialIconEls.length) {
     { xVw: 18, yVh: 70 }
   ];
 
-  const isMobile = () => window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+  // 980px: below that the left-edge column would sit on top of the content
+  const isMobile = () => window.matchMedia('(max-width: 980px), (pointer: coarse)').matches;
 
   function setIconState(state, instant) {
     socialIconEls.forEach((icon) => {
