@@ -14,8 +14,8 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0B0B0A" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#F2EFE9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
 <title>roen · CS @ NTU</title>
 <meta name="description" content="Roen, computer science student at NTU. Building projects that I find interesting or useful, heading toward software engineering.">
 
@@ -34,7 +34,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -42,6 +42,7 @@
 
 <div class="grain"></div>
 <div class="scroll-progress" aria-hidden="true"></div>
+<div class="bg-effects" id="bgEffects" aria-hidden="true"></div>
 
 <div class="social-icons" id="socialIcons">
   <a href="https://github.com/tensixn" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub">
@@ -55,6 +56,15 @@
   </a>
 </div>
 
+
+<!-- intro loader -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="boot-lines" id="bootLines"></div>
+    <div class="loader-name" id="loaderName" aria-hidden="true">hello, i'm roen!</div>
+    <button class="loader-skip" id="skipBtn" type="button">skip →</button>
+  </div>
+</div>
 
 <header class="topbar">
   <a href="#top" class="logo">roen<span class="cursor-static">_</span></a>
@@ -71,7 +81,6 @@
       <span class="theme-toggle-thumb"></span>
     </span>
   </button>
-  <span class="topbar-clock" id="topbarClock" aria-hidden="true">SG --:--:--</span>
   <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
     <span></span><span></span>
   </button>
@@ -99,20 +108,14 @@
 <main>
 
   <section class="hero" id="top">
-    <div class="hero-panel">
-      <h1 class="sr-only">Roen, computer science student at NTU</h1>
-      <p class="counter-badge" aria-hidden="true">NO. <span id="counterIndex">01</span> / <span id="counterTotal">05</span></p>
-      <div class="counter-row">
-        <div class="counter" id="counter" aria-hidden="true"></div>
-        <a href="Roen_Seow_Resume.pdf" target="_blank" rel="noopener" class="counter-slot" aria-label="resume (PDF)">
-          <span class="counter-card">
-            <span class="counter-card-chip"></span>
-            <span class="counter-card-label">resume<br>.pdf ↗</span>
-          </span>
-        </a>
-      </div>
-      <span class="counter-knob" aria-hidden="true"></span>
-      <p class="counter-line" id="counterLine">hello, i'm roen, a <em>cs student</em> at NTU.</p>
+    <div class="hero-inner">
+      <p class="prompt-line">
+        <span class="prompt-user">roen@ntu</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-sep">$</span>
+        <span id="typedWhoami"></span><span class="cursor-blink" aria-hidden="true">▌</span>
+      </p>
+      <h1 class="hero-name" id="heroHeading">hello, i'm <span id="heroNameTarget">roen</span>!</h1>
+      <div class="counter" id="counter" aria-hidden="true"></div>
+      <p class="hero-role">i'm a <span class="role-word" id="roleWord">cs student</span></p>
       <div class="counter-pips" id="counterPips"></div>
       <p class="hero-tagline">I build projects that I find interesting or useful at NTU, working towards my goal of being a Software Engineer.</p>
       <div class="hero-links">
@@ -125,7 +128,7 @@
 
   <section class="about reveal" id="about">
     <div class="section-head">
-      <span class="tag">01</span>
+      <span class="tag">~/about</span>
       <h2>about</h2>
     </div>
     <div class="about-grid" data-reveal-group>
@@ -157,13 +160,13 @@
           <span class="status-key">open to</span>
           <span class="status-val">internships · collab projects</span>
         </div>
-        <p class="stack-label">currently working with</p>
+        <p class="stack-label">// currently working with</p>
         <div class="stack-tags">
-          <kbd class="stack-tag">java</kbd>
-          <kbd class="stack-tag">python</kbd>
-          <kbd class="stack-tag">react-native</kbd>
-          <kbd class="stack-tag">sql</kbd>
-          <kbd class="stack-tag">typescript</kbd>
+          <span class="stack-tag">--java</span>
+          <span class="stack-tag">--python</span>
+          <span class="stack-tag">--react-native</span>
+          <span class="stack-tag">--sql</span>
+          <span class="stack-tag">--typescript</span>
         </div>
       </aside>
     </div>
@@ -171,7 +174,7 @@
 
   <section class="projects reveal" id="projects">
     <div class="section-head">
-      <span class="tag">02</span>
+      <span class="tag">~/projects</span>
       <h2>projects</h2>
     </div>
 
@@ -309,7 +312,7 @@
 
   <section class="contact reveal" id="contact">
     <div class="section-head">
-      <span class="tag">03</span>
+      <span class="tag">~/contact</span>
       <h2>contact</h2>
     </div>
     <div class="contact-body" data-reveal-group>
@@ -338,7 +341,7 @@
 </main>
 
 <footer class="site-footer">
-  <p>roen · <span id="year"></span></p>
+  <p>// roen · <span id="year"></span> //</p>
 </footer>
 
 <script src="script.js"></script>
