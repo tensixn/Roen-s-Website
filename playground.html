@@ -14,8 +14,8 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0F1210" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0B0A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2EFE9" media="(prefers-color-scheme: light)">
 <title>playground - roen</title>
 <meta name="description" content="A small handwritten terminal to poke around in. Try 'help'.">
 
@@ -31,7 +31,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="favicon.png">
 </head>
@@ -39,7 +39,6 @@
 
 <div class="grain"></div>
 <div class="scroll-progress" aria-hidden="true"></div>
-<div class="bg-effects" id="bgEffects" aria-hidden="true"></div>
 
 <header class="topbar">
   <a href="index.html" class="logo">roen<span class="cursor-static">_</span></a>
@@ -56,6 +55,7 @@
       <span class="theme-toggle-thumb"></span>
     </span>
   </button>
+  <span class="topbar-clock" id="topbarClock" aria-hidden="true">SG --:--:--</span>
   <button class="menu-toggle" id="menuToggle" aria-label="open menu" aria-expanded="false">
     <span></span><span></span>
   </button>
@@ -187,7 +187,7 @@
 
 
 <footer class="site-footer">
-  <p>// roen · <span id="year"></span> //</p>
+  <p>roen · <span id="year"></span></p>
 </footer>
 
 <script src="script.js"></script>

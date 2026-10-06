@@ -54,75 +54,14 @@ if (themeToggle) {
   themeToggle.addEventListener('click', () => {
     switchTheme(currentTheme() === 'light' ? 'dark' : 'light');
 
-    // little pulse ring on the toggle + gently settle the background particles
+    // little pulse ring on the toggle
     const track = themeToggle.querySelector('.theme-toggle-track');
     if (track) {
       track.classList.remove('is-pulsing');
       void track.offsetWidth;
       track.classList.add('is-pulsing');
     }
-    const bgFx = document.getElementById('bgEffects');
-    if (bgFx && !prefersReducedMotion) {
-      bgFx.classList.add('is-switching');
-      setTimeout(() => bgFx.classList.remove('is-switching'), 600);
-    }
   });
-}
-
-/* ---------------- ambient background particles (stars in dark, dust in light) ---------------- */
-const bgEffects = document.getElementById('bgEffects');
-if (bgEffects && !prefersReducedMotion) {
-  const PARTICLE_COUNT = 30;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = 1 + Math.random() * 2.2;
-    p.style.width = size + 'px';
-    p.style.height = size + 'px';
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.top = Math.random() * 100 + 'vh';
-    p.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
-    p.style.setProperty('--delay', (Math.random() * 6) + 's');
-    p.style.setProperty('--maxOpacity', (0.25 + Math.random() * 0.45).toFixed(2));
-    bgEffects.appendChild(p);
-  }
-
-  // gentle parallax - particles drift at a slightly different rate than the page
-  if (!isMobileViewport()) {
-    const speeds = [];
-    const particleEls = bgEffects.querySelectorAll('.particle');
-    particleEls.forEach((p) => speeds.push(0.4 + Math.random() * 0.5)); // 40–90% of scroll speed
-    let parallaxTicking = false;
-    window.addEventListener('scroll', () => {
-      if (parallaxTicking) return;
-      parallaxTicking = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        particleEls.forEach((p, i) => {
-          p.style.translate = '0 ' + (-y * speeds[i] * 0.08) + 'px';
-        });
-        parallaxTicking = false;
-      });
-    }, { passive: true });
-  }
-
-  // occasional shooting star in dark mode
-  if (!prefersReducedMotion && document.documentElement.getAttribute('data-theme') !== 'light') {
-    const spawnShootingStar = () => {
-      if (document.documentElement.getAttribute('data-theme') === 'light') return;
-      const s = document.createElement('div');
-      s.className = 'shooting-star';
-      s.style.left = (20 + Math.random() * 70) + 'vw';
-      s.style.top = (5 + Math.random() * 30) + 'vh';
-      s.style.setProperty('--angle', (18 + Math.random() * 24) + 'deg');
-      s.style.setProperty('--dx', (200 + Math.random() * 220) + 'px');
-      s.style.setProperty('--dy', (100 + Math.random() * 120) + 'px');
-      bgEffects.appendChild(s);
-      setTimeout(() => s.remove(), 1600);
-    };
-    setTimeout(spawnShootingStar, 4000 + Math.random() * 6000);
-    setInterval(() => { if (Math.random() < 0.5) spawnShootingStar(); }, 9000);
-  }
 }
 
 function isMobileViewport() {
@@ -334,36 +273,8 @@ if (contactForm && contactFormStatus) {
   });
 }
 
-/* ---------------- intro loader ---------------- */
-const loader = document.getElementById('loader');
-const skipBtn = document.getElementById('skipBtn');
-const bootLines = document.getElementById('bootLines');
-const loaderName = document.getElementById('loaderName');
-const heroHeadingEl = document.getElementById('heroHeading');
-
-const BOOT_SEQUENCE = [
-  '<span class="boot-prompt">$</span> booting roen@ntu<span class="boot-cursor">▌</span>',
-  '<span class="boot-ok">[ok]</span> loading coursework cache',
-  '<span class="boot-ok">[ok]</span> compiling projects',
-  '<span class="boot-ok">[ok]</span> connecting to caffeine supply',
-  '<span class="boot-ok">[ok]</span> mounting portfolio at ~/',
-  'welcome.'
-];
-
-// storage can be blocked (private mode, hardened settings); treat that as "not seen"
-const introSeen = {
-  get() { try { return sessionStorage.getItem('roen_intro_seen'); } catch (e) { return null; } },
-  set() { try { sessionStorage.setItem('roen_intro_seen', '1'); } catch (e) { /* blocked */ } }
-};
-
-function hideLoader() {
-  if (!loader) return;
-  loader.classList.add('is-hidden');
-  introSeen.set();
-}
-
-// decode effect for the section headings (h2s scramble in like a terminal)
-const GLYPHS = '01<>/_{}[]$#';
+// decode effect for the section headings (h2s flip through letters like the counter)
+const GLYPHS = 'abcdefghijklmnopqrstuvwxyz';
 
 function decodeText(el) {
   if (!el || el.dataset.decoded) return;
@@ -402,9 +313,7 @@ document.querySelectorAll('.section-head h2').forEach((h) => {
   else h.dataset.decoded = '1';
 });
 
-// mark the page as loaded so the hero elements cascade in.
-// if the intro is playing, wait until the name lands so the cascade reads as
-// a continuation of the intro; otherwise fire as soon as the page is ready.
+// mark the page as loaded so the hero elements cascade in
 let heroRevealed = false;
 function markLoaded() {
   if (heroRevealed) return;
@@ -413,127 +322,11 @@ function markLoaded() {
   document.dispatchEvent(new CustomEvent('hero:loaded'));
 }
 
-function isLoaderPlaying() {
-  return loader
-    && !introSeen.get()
-    && !loader.classList.contains('is-hidden');
-}
-
-if (isLoaderPlaying()) {
-  loader.addEventListener('transitionend', (e) => {
-    if (e.target === loader) markLoaded();
-  });
-  // safety net if the transitionend never fires (skip click, reduced motion, etc.)
-  setTimeout(markLoaded, 4500);
+if (document.readyState === 'complete') {
+  markLoaded();
 } else {
-  if (document.readyState === 'complete') {
-    markLoaded();
-  } else {
-    window.addEventListener('load', markLoaded);
-    setTimeout(markLoaded, 2500);
-  }
-}
-
-function flipNameToHero() {
-  if (!loaderName || !heroHeadingEl) { hideLoader(); return; }
-
-  const startRect = loaderName.getBoundingClientRect();
-  const endRect = heroHeadingEl.getBoundingClientRect();
-  const targetFontSize = window.getComputedStyle(heroHeadingEl).fontSize;
-
-  // lock in the current visual position/size as explicit px values,
-  // swapping off the translate(-50%,-50%) centering trick with no visual change
-  loaderName.style.transition = 'none';
-  loaderName.style.left = startRect.left + 'px';
-  loaderName.style.top = startRect.top + 'px';
-  loaderName.style.transform = 'none';
-
-  // iOS Safari doesn't reliably pick up a style change forced via a single
-  // offsetHeight reflow before the next mutation - double rAF guarantees the
-  // "before" state is actually painted first, so the transition below plays
-  // instead of silently no-opping and jump-cutting to the fallback below
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      loaderName.classList.add('is-flying');
-      loaderName.style.transition = ''; // hand control back to the .is-flying transition rule
-
-      // now animate to the real target's exact position and exact font-size
-      loaderName.style.left = endRect.left + 'px';
-      loaderName.style.top = endRect.top + 'px';
-      loaderName.style.fontSize = targetFontSize;
-    });
-  });
-
-  let landed = false;
-  function land() {
-    if (landed) return;
-    landed = true;
-    loaderName.classList.add('is-landed');
-    hideLoader();
-  }
-  loaderName.addEventListener('transitionend', function onEnd(e) {
-    if (e.propertyName !== 'font-size') return;
-    loaderName.removeEventListener('transitionend', onEnd);
-    land();
-  });
-  // fallback in case transitionend doesn't fire for any reason
-  setTimeout(land, 1500);
-}
-
-if (loader) {
-  if (introSeen.get()) {
-    loader.classList.add('is-hidden');
-  } else if (prefersReducedMotion) {
-    BOOT_SEQUENCE.forEach((html) => {
-      const line = document.createElement('p');
-      line.className = 'boot-line is-visible';
-      line.innerHTML = html;
-      bootLines.appendChild(line);
-    });
-    const t = setTimeout(hideLoader, 300);
-    skipBtn.addEventListener('click', () => { clearTimeout(t); hideLoader(); });
-  } else {
-    const timers = [];
-    BOOT_SEQUENCE.forEach((html, i) => {
-      const t = setTimeout(() => {
-        const line = document.createElement('p');
-        line.className = 'boot-line';
-        line.innerHTML = html;
-        bootLines.appendChild(line);
-        requestAnimationFrame(() => line.classList.add('is-visible'));
-      }, i * 260);
-      timers.push(t);
-    });
-
-    const bootDuration = BOOT_SEQUENCE.length * 260;
-
-    timers.push(setTimeout(() => {
-      bootLines.style.transition = 'opacity 0.3s ease';
-      bootLines.style.opacity = '0';
-    }, bootDuration + 250));
-
-    timers.push(setTimeout(() => {
-      loaderName.classList.add('is-visible');
-    }, bootDuration + 500));
-
-    timers.push(setTimeout(flipNameToHero, bootDuration + 1050));
-
-    const autoHide = setTimeout(hideLoader, bootDuration + 2500);
-    timers.push(autoHide);
-
-    skipBtn.addEventListener('click', () => {
-      timers.forEach(clearTimeout);
-      hideLoader();
-    });
-  }
-}
-
-/* ---------------- project cards: staggered entrance ---------------- */
-const projectList = document.querySelector('.project-list');
-if (projectList && !prefersReducedMotion) {
-  projectList.setAttribute('data-reveal-group', '');
-  // the empty "more coming" card shouldn't be part of the stagger ordering issue,
-  // CSS handles delays via nth-child, nothing to do here beyond opting in
+  window.addEventListener('load', markLoaded);
+  setTimeout(markLoaded, 2500);
 }
 
 /* ---------------- mobile nav ---------------- */
@@ -574,70 +367,147 @@ if (mobileNav) {
   mobileNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMobileNav));
 }
 
-/* ---------------- typed terminal line ---------------- */
-function typeOut(el, text, speed = 90) {
-  if (!el) return;
-  if (prefersReducedMotion) {
-    el.textContent = text;
-    return;
-  }
-  let i = 0;
-  el.textContent = '';
-  const interval = setInterval(() => {
-    el.textContent += text[i];
-    i++;
-    if (i >= text.length) clearInterval(interval);
-  }, speed);
-}
-// Start the typing once the hero is actually visible - otherwise it plays
-// behind the intro loader and the user lands on an already-finished line.
-// Delay by a beat so it reads as part of the intro cascade on repeat visits.
-function startTypedWhoami() {
-  setTimeout(() => typeOut(document.getElementById('typedWhoami'), 'whoami'), prefersReducedMotion ? 0 : 450);
-}
-if (document.body.classList.contains('is-loaded')) {
-  startTypedWhoami();
-} else {
-  document.addEventListener('hero:loaded', startTypedWhoami, { once: true });
-}
+/* ---------------- rolling counter (hero) ---------------- */
+// eight drum tiles that roll through a few words; each word has a line under it.
+// the drum is decorative (aria-hidden) - the line and the h1 carry the meaning.
+const counterEl = document.getElementById('counter');
+if (counterEl) {
+  const WIDTH = 8;
+  const REEL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  // dd.mm.yy in Singapore time, same zone as the topbar clock
+  const sgDate = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Singapore', day: '2-digit', month: '2-digit', year: '2-digit'
+  }).format(new Date()).replace(/\//g, '.');
+  const FRAMES = [
+    { word: 'HI, ROEN', line: "hello, i'm roen, a <em>cs student</em> at NTU." },
+    { word: sgDate, line: 'today is a good day to <em>build</em> something.' },
+    { word: 'SWE.SOON', line: 'working towards being a <em>software engineer</em>.' },
+    { word: 'GAMER', line: 'off the clock, a <em>gamer</em>, gym goer, football fan and mahjong enjoyer.' },
+    { word: 'HIRE ME?', line: 'open to <em>internships</em> and collab projects.' }
+  ];
+  const fit = (w) => {
+    const left = Math.floor((WIDTH - w.length) / 2);
+    return (' '.repeat(left) + w).padEnd(WIDTH, ' ');
+  };
+  const randChar = () => REEL[Math.floor(Math.random() * REEL.length)];
+  const lineEl = document.getElementById('counterLine');
+  const indexEl = document.getElementById('counterIndex');
+  const totalEl = document.getElementById('counterTotal');
+  const pipsEl = document.getElementById('counterPips');
+  const pad2 = (n) => String(n).padStart(2, '0');
 
-/* ---------------- rotating role word ---------------- */
-const roleWordEl = document.getElementById('roleWord');
-const roles = ['cs student', 'gamer', 'future software engineer', 'football enthusiast', 'gym goer', 'mahjong enjoyer'];
-let roleIndex = 0;
-
-if (roleWordEl) {
-  // the swap animates width too, so the surrounding text doesn't jump when
-  // the next role is a different length. width is set to an exact px value
-  // via a hidden measurer, then animated alongside the text swap.
-  const measurer = document.createElement('span');
-  measurer.className = 'role-word role-word--measure';
-  measurer.setAttribute('aria-hidden', 'true');
-  roleWordEl.parentNode.appendChild(measurer);
-  const measure = (text) => { measurer.textContent = text; return measurer.offsetWidth; };
-
-  roleWordEl.style.width = roleWordEl.offsetWidth + 'px';
-
-  function cycleRole() {
-    roleIndex = (roleIndex + 1) % roles.length;
-    const next = roles[roleIndex];
-    roleWordEl.style.width = measure(next) + 'px';
-    roleWordEl.classList.remove('is-swapping');
-    void roleWordEl.offsetWidth;
-    roleWordEl.classList.add('is-swapping');
-    setTimeout(() => {
-      roleWordEl.textContent = next;
-    }, 240);
+  // each tile shows the char at strip index 1, with a neighbour peeking above and below
+  const tiles = [];
+  for (let i = 0; i < WIDTH; i++) {
+    const tile = document.createElement('span');
+    tile.className = 'counter-tile';
+    const strip = document.createElement('span');
+    strip.className = 'counter-strip';
+    tile.appendChild(strip);
+    counterEl.appendChild(tile);
+    tiles.push({ strip, char: randChar(), anim: null });
   }
 
-  if (!prefersReducedMotion) setInterval(cycleRole, 2600);
-
-  // re-measure once webfonts finish loading so widths don't go stale
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => {
-      roleWordEl.style.width = measure(roleWordEl.textContent) + 'px';
+  function setStrip(t, chars, at) {
+    t.strip.innerHTML = '';
+    chars.forEach((c) => {
+      const ch = document.createElement('span');
+      ch.className = 'counter-ch';
+      ch.textContent = c;
+      t.strip.appendChild(ch);
     });
+    t.strip.style.transform = `translateY(${-at * rowHeight()}px)`;
   }
+  const rowHeight = () => tiles[0].strip.firstChild ? tiles[0].strip.firstChild.offsetHeight : 0;
+  const settle = (t, c) => { t.char = c; setStrip(t, [randChar(), c, randChar()], 1); };
+
+  tiles.forEach((t) => settle(t, t.char));
+
+  function rollTile(t, i, target) {
+    if (t.anim) t.anim.cancel();
+    if (prefersReducedMotion) { settle(t, target); return; }
+    // later tiles travel further and land later, so the word resolves left to right
+    const steps = 7 + i * 2;
+    const chars = [randChar(), t.char];
+    for (let k = 0; k < steps; k++) chars.push(randChar());
+    chars.push(target, randChar());
+    setStrip(t, chars, 1);
+    const row = rowHeight();
+    t.anim = t.strip.animate([
+      { transform: `translateY(${-row}px)`, filter: 'blur(0)' },
+      { filter: 'blur(1.6px)', offset: 0.35 },
+      { transform: `translateY(${-(steps + 2) * row}px)`, filter: 'blur(0)' }
+    ], {
+      duration: 760 + i * 80,
+      delay: i * 35,
+      easing: 'cubic-bezier(0.35, 0, 0.2, 1.12)',
+      fill: 'forwards'
+    });
+    t.anim.finished.then(() => { t.anim.cancel(); t.anim = null; settle(t, target); }).catch(() => {});
+  }
+
+  let current = -1;
+  let timer = null;
+  let heroVisible = true;
+  const pips = FRAMES.map((f, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'counter-pip';
+    b.setAttribute('aria-label', `show line ${i + 1} of ${FRAMES.length}`);
+    b.addEventListener('click', () => { show(i); schedule(); });
+    pipsEl.appendChild(b);
+    return b;
+  });
+  totalEl.textContent = pad2(FRAMES.length);
+
+  function show(i) {
+    if (i === current) return;
+    current = i;
+    const word = fit(FRAMES[i].word);
+    tiles.forEach((t, k) => rollTile(t, k, word[k]));
+    indexEl.textContent = pad2(i + 1);
+    pips.forEach((p, k) => p.setAttribute('aria-current', String(k === i)));
+    if (prefersReducedMotion) { lineEl.innerHTML = FRAMES[i].line; return; }
+    lineEl.classList.add('is-swapping');
+    setTimeout(() => {
+      lineEl.innerHTML = FRAMES[i].line;
+      lineEl.classList.remove('is-swapping');
+    }, 420);
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    if (prefersReducedMotion || document.hidden || !heroVisible) return;
+    timer = setTimeout(() => { show((current + 1) % FRAMES.length); schedule(); }, 3800);
+  }
+
+  // only run while someone can see it
+  document.addEventListener('visibilitychange', schedule);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; schedule(); })
+      .observe(counterEl);
+  }
+
+  // first roll doubles as the intro: random reels settle on the greeting
+  const start = () => { show(0); schedule(); };
+  if (document.body.classList.contains('is-loaded')) start();
+  else document.addEventListener('hero:loaded', start, { once: true });
+
+  // the row height comes from the webfont, so re-seat the reels once it loads
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => tiles.forEach((t) => { if (!t.anim) settle(t, t.char); }));
+  }
+}
+
+/* ---------------- topbar clock ---------------- */
+const clockEl = document.getElementById('topbarClock');
+if (clockEl) {
+  const clockFmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  });
+  const tick = () => { clockEl.textContent = 'SG ' + clockFmt.format(new Date()); };
+  tick();
+  setInterval(tick, 1000);
 }
 
 /* ---------------- project expand/collapse ---------------- */
