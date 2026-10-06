@@ -35,5 +35,6 @@ If it ever needs re-pointing (new email, new Formspree account):
 ## Notes
 
 - `Roen_Seow_Resume.pdf` is linked from the hero and the playground `resume` command.
+- The hero's rolling counter and the role word under it are driven by the `ROLES` list in `script.js` (each `code` is at most 8 characters).
 - Theme (`roen_theme`), intro-seen (`roen_intro_seen`), and bubble pops (`roen_bubble_pops`) are stored in `localStorage`/`sessionStorage`.
 - Analytics only load on the deployed site (`/_vercel/insights/script.js` is a Vercel-injected path; it 404s locally, which is harmless).

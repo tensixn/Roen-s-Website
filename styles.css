@@ -714,6 +714,102 @@ a { color: inherit; text-decoration: none; }
   100% { transform: translateY(0); opacity: 1; }
 }
 
+/* ---------- rolling counter ---------- */
+/* each tile is a window onto a vertical reel of characters: the centred one is
+   sharp, the neighbours above and below are cut off and shaded like a drum */
+.counter {
+  --row: 1.2em;
+  display: inline-flex;
+  gap: 3px;
+  padding: 5px;
+  margin: 12px 0 18px;
+  max-width: 100%;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: clamp(26px, 6.4vw, 52px);
+}
+
+.counter-tile {
+  position: relative;
+  width: 0.8em;
+  height: calc(var(--row) * 1.6);
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.counter-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    var(--drum-shade) 0%, transparent 34%,
+    rgba(var(--accent-rgb), 0.06) 50%,
+    transparent 66%, var(--drum-shade) 100%);
+  pointer-events: none;
+}
+
+:root { --drum-shade: rgba(0, 0, 0, 0.7); }
+[data-theme="light"] { --drum-shade: rgba(244, 241, 234, 0.85); }
+
+.counter-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--row) * 0.3);
+  will-change: transform;
+}
+
+.counter-ch {
+  display: block;
+  height: var(--row);
+  line-height: var(--row);
+  text-align: center;
+}
+
+/* one dot per role: shows where the cycle is and lets you jump */
+.counter-pips {
+  display: flex;
+  gap: 2px;
+  margin: -8px 0 14px -9px;
+}
+
+.counter-pip {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.counter-pip::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border-hover);
+  transition: width 0.3s ease, background 0.3s ease, border-radius 0.3s ease;
+}
+
+.counter-pip:hover::before { background: var(--text-dim); }
+
+.counter-pip[aria-current="true"]::before {
+  width: 16px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .counter { gap: 2px; padding: 4px; font-size: clamp(24px, 9vw, 44px); }
+}
+
 .hero-tagline {
   font-size: 18px;
   color: var(--text-dim);
@@ -789,7 +885,9 @@ a { color: inherit; text-decoration: none; }
    name itself must stay put so the flying loader title can land on it and
    hand over seamlessly). sequenced by body.is-loaded. */
 .js .hero .prompt-line,
+.js .hero .counter,
 .js .hero .hero-role,
+.js .hero .counter-pips,
 .js .hero .hero-tagline {
   opacity: 0;
   /* pure-CSS failsafe: if body.is-loaded never lands (script failed, etc.),
@@ -798,19 +896,25 @@ a { color: inherit; text-decoration: none; }
 }
 
 .js body.is-loaded .hero .prompt-line,
+.js body.is-loaded .hero .counter,
 .js body.is-loaded .hero .hero-role,
+.js body.is-loaded .hero .counter-pips,
 .js body.is-loaded .hero .hero-tagline {
   animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   opacity: 1;
 }
 
 .js body.is-loaded .hero .prompt-line { animation-delay: 0.05s; }
+.js body.is-loaded .hero .counter { animation-delay: 0.14s; }
 .js body.is-loaded .hero .hero-role { animation-delay: 0.24s; }
+.js body.is-loaded .hero .counter-pips { animation-delay: 0.3s; }
 .js body.is-loaded .hero .hero-tagline { animation-delay: 0.34s; }
 
 @media (prefers-reduced-motion: reduce) {
   .js .hero .prompt-line,
+  .js .hero .counter,
   .js .hero .hero-role,
+  .js .hero .counter-pips,
   .js .hero .hero-tagline { opacity: 1 !important; animation: none !important; }
 }
 

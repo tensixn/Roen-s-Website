@@ -601,42 +601,123 @@ if (document.body.classList.contains('is-loaded')) {
   document.addEventListener('hero:loaded', startTypedWhoami, { once: true });
 }
 
-/* ---------------- rotating role word ---------------- */
+/* ---------------- rolling counter + role word ---------------- */
+// eight drum tiles roll to a short code for each role, and the role word under
+// them swaps in sync. the drum is decorative (aria-hidden); the role line carries the meaning.
+const counterEl = document.getElementById('counter');
 const roleWordEl = document.getElementById('roleWord');
-const roles = ['cs student', 'gamer', 'future software engineer', 'football enthusiast', 'gym goer', 'mahjong enjoyer'];
-let roleIndex = 0;
+const ROLES = [
+  { code: 'CS @ NTU', role: 'cs student' },
+  { code: 'GAMER', role: 'gamer' },
+  { code: 'SWE.SOON', role: 'future software engineer' },
+  { code: 'FOOTBALL', role: 'football enthusiast' },
+  { code: 'GYM GOER', role: 'gym goer' },
+  { code: 'MAHJONG', role: 'mahjong enjoyer' }
+];
 
-if (roleWordEl) {
-  // the swap animates width too, so the surrounding text doesn't jump when
-  // the next role is a different length. width is set to an exact px value
-  // via a hidden measurer, then animated alongside the text swap.
-  const measurer = document.createElement('span');
-  measurer.className = 'role-word role-word--measure';
-  measurer.setAttribute('aria-hidden', 'true');
-  roleWordEl.parentNode.appendChild(measurer);
-  const measure = (text) => { measurer.textContent = text; return measurer.offsetWidth; };
+if (counterEl && roleWordEl) {
+  const WIDTH = 8;
+  const REEL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#_/<>';
+  const randChar = () => REEL[Math.floor(Math.random() * REEL.length)];
+  const fit = (w) => (' '.repeat(Math.floor((WIDTH - w.length) / 2)) + w).padEnd(WIDTH, ' ');
+  const pipsEl = document.getElementById('counterPips');
 
-  roleWordEl.style.width = roleWordEl.offsetWidth + 'px';
+  // each tile shows the char at strip index 1, with a neighbour peeking above and below
+  const tiles = [];
+  for (let i = 0; i < WIDTH; i++) {
+    const tile = document.createElement('span');
+    tile.className = 'counter-tile';
+    const strip = document.createElement('span');
+    strip.className = 'counter-strip';
+    tile.appendChild(strip);
+    counterEl.appendChild(tile);
+    tiles.push({ strip, char: randChar(), anim: null });
+  }
 
-  function cycleRole() {
-    roleIndex = (roleIndex + 1) % roles.length;
-    const next = roles[roleIndex];
-    roleWordEl.style.width = measure(next) + 'px';
+  const rowHeight = () => (tiles[0].strip.firstChild ? tiles[0].strip.firstChild.offsetHeight : 0);
+  function setStrip(t, chars, at) {
+    t.strip.innerHTML = '';
+    chars.forEach((c) => {
+      const ch = document.createElement('span');
+      ch.className = 'counter-ch';
+      ch.textContent = c;
+      t.strip.appendChild(ch);
+    });
+    t.strip.style.transform = `translateY(${-at * rowHeight()}px)`;
+  }
+  const settle = (t, c) => { t.char = c; setStrip(t, [randChar(), c, randChar()], 1); };
+  tiles.forEach((t) => settle(t, t.char));
+
+  function rollTile(t, i, target) {
+    if (t.anim) t.anim.cancel();
+    if (prefersReducedMotion) { settle(t, target); return; }
+    // later tiles travel further and land later, so the code resolves left to right
+    const steps = 7 + i * 2;
+    const chars = [randChar(), t.char];
+    for (let k = 0; k < steps; k++) chars.push(randChar());
+    chars.push(target, randChar());
+    setStrip(t, chars, 1);
+    const row = rowHeight();
+    t.anim = t.strip.animate([
+      { transform: `translateY(${-row}px)`, filter: 'blur(0)' },
+      { filter: 'blur(1.4px)', offset: 0.35 },
+      { transform: `translateY(${-(steps + 2) * row}px)`, filter: 'blur(0)' }
+    ], {
+      duration: 700 + i * 75,
+      delay: i * 35,
+      easing: 'cubic-bezier(0.35, 0, 0.2, 1.12)',
+      fill: 'forwards'
+    });
+    t.anim.finished.then(() => { t.anim.cancel(); t.anim = null; settle(t, target); }).catch(() => {});
+  }
+
+  let current = -1;
+  let timer = null;
+  let heroVisible = true;
+  const pips = ROLES.map((r, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'counter-pip';
+    b.setAttribute('aria-label', `show role ${i + 1} of ${ROLES.length}: ${r.role}`);
+    b.addEventListener('click', () => { show(i); schedule(); });
+    pipsEl.appendChild(b);
+    return b;
+  });
+
+  function show(i) {
+    if (i === current) return;
+    const first = current === -1;
+    current = i;
+    const code = fit(ROLES[i].code);
+    tiles.forEach((t, k) => rollTile(t, k, code[k]));
+    pips.forEach((p, k) => p.setAttribute('aria-current', String(k === i)));
+    if (first || prefersReducedMotion) { roleWordEl.textContent = ROLES[i].role; return; }
     roleWordEl.classList.remove('is-swapping');
     void roleWordEl.offsetWidth;
     roleWordEl.classList.add('is-swapping');
-    setTimeout(() => {
-      roleWordEl.textContent = next;
-    }, 240);
+    setTimeout(() => { roleWordEl.textContent = ROLES[i].role; }, 240);
   }
 
-  if (!prefersReducedMotion) setInterval(cycleRole, 2600);
+  function schedule() {
+    clearTimeout(timer);
+    if (prefersReducedMotion || document.hidden || !heroVisible) return;
+    timer = setTimeout(() => { show((current + 1) % ROLES.length); schedule(); }, 3400);
+  }
 
-  // re-measure once webfonts finish loading so widths don't go stale
+  // only run while someone can see it
+  document.addEventListener('visibilitychange', schedule);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; schedule(); }).observe(counterEl);
+  }
+
+  // first roll plays once the intro hands over to the hero
+  const start = () => { show(0); schedule(); };
+  if (document.body.classList.contains('is-loaded')) start();
+  else document.addEventListener('hero:loaded', start, { once: true });
+
+  // the row height comes from the webfont, so re-seat the reels once it loads
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => {
-      roleWordEl.style.width = measure(roleWordEl.textContent) + 'px';
-    });
+    document.fonts.ready.then(() => tiles.forEach((t) => { if (!t.anim) settle(t, t.char); }));
   }
 }
 
