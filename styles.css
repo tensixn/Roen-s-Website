@@ -1289,6 +1289,22 @@ section {
   max-height: 300px;
 }
 
+/* several phone screens side by side */
+.preview-shots {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  width: 456px;
+  max-width: 100%;
+}
+
+.project-preview .preview-shots img {
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: none;
+  border-radius: 3px;
+}
+
 .preview-term {
   margin: 0;
   padding: 14px 16px;
