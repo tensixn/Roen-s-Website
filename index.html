@@ -205,7 +205,7 @@
         </figure>
         <div class="project-more" id="projectMore5">
           <div class="project-more-inner">
-            <p>It's four small Node modules: the bot and its commands, a market module that wraps both price sources, a Claude API module for /predict, and a small per-user store. /predict asks Claude for a signal, price targets and risks on a ticker.</p>
+            <p>It's four small Node modules: the bot and its commands, a market module that wraps both price sources, a Claude API module for /predict, and a small per-user store. /predict pulls 30 days of daily prices, works out 7 and 14-day moving averages, 14-day RSI and volatility, and hands those to Claude for a signal, price targets and risks, so the model reasons from real indicators instead of guessing from a ticker name.</p>
             <p>A background job checks every user's price alerts every 5 minutes and messages them when one triggers. Railway restarts the bot automatically if it crashes, so it stays up without me watching it.</p>
             <p>I built it because checking prices meant switching apps constantly. A bot lives right where I'm already texting people.</p>
           </div>
