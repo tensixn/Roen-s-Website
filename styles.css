@@ -1181,6 +1181,7 @@ section {
 }
 
 .project-date { color: var(--text-dim); }
+.project-links { display: flex; gap: 14px; flex-shrink: 0; white-space: nowrap; }
 .project-github { color: var(--accent-text); }
 .project-github:hover { text-decoration: underline; }
 
